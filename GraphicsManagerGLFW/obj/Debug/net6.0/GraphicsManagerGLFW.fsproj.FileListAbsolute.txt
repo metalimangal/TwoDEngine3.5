@@ -1,0 +1,5 @@
+C:\Users\jpkessel\Documents\RiderProjects\TwoDEngine3\GraphicsManagerGLFW\obj\Debug\net6.0\GraphicsManagerGLFW.fsproj.AssemblyReference.cache
+C:\Users\jpkessel\Documents\RiderProjects\TwoDEngine3\GraphicsManagerGLFW\obj\Debug\net6.0\GraphicsManagerGLFW.AssemblyInfoInputs.cache
+C:\Users\jpkessel\Documents\RiderProjects\TwoDEngine3\GraphicsManagerGLFW\obj\Debug\net6.0\GraphicsManagerGLFW.AssemblyInfo.fs
+C:\Users\jpkessel\Documents\RiderProjects\TwoDEngine3\GraphicsManagerGLFW\obj\Debug\net6.0\GraphicsManagerGLFW.fsproj.CoreCompileInputs.cache
+C:\Users\jpkessel\Documents\RiderProjects\TwoDEngine3\GraphicsManagerGLFW\obj\Debug\net6.0\GraphicsManagerGLFW.sourcelink.json

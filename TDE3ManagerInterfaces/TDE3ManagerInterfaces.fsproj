@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Configurations>Debug;Release;DebugWindows</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="InputDeviceManager.fs" />
+        <Compile Include="GraphicsManagerInterface.fs" />
+        <Compile Include="GameControllerManager.fs" />
+        <Compile Include="TextRenderer.fs" />
+        <Compile Include="SystemContext.fs" />
+        <Compile Include="MouseAndKeyboardManager.fs" />
+        <Compile Include="RenderGraph.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FSFramework" Version="1.0.0-preview-1" />
+        <PackageReference Include="glfw-net" Version="3.3.1" />
+        <PackageReference Include="MathSharp" Version="2.0.0-pre" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FSTree\FSTree.fsproj" />
+    </ItemGroup>
+
+</Project>
