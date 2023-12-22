@@ -15,6 +15,7 @@
         <Compile Include="SystemContext.fs" />
         <Compile Include="MouseAndKeyboardManager.fs" />
         <Compile Include="RenderGraph.fs" />
+        <Compile Include="RenderTree.fs" />
     </ItemGroup>
 
     <ItemGroup>
