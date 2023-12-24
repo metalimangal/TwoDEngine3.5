@@ -47,7 +47,7 @@ let Render unit =
 let main argv =
 
     //Register GraphicsManager
-    typedefof<GraphicsManagerGLFW>
+    typedefof<GraphicsManagerSFML>
     |> ManagerRegistry.addManager
     //register textRenderer
     typedefof<AngelCodeTextRenderer>
@@ -58,8 +58,9 @@ let main argv =
     
 
     match ManagerRegistry.getManager<GraphicsManager> () with
-    | Some graphics -> graphics.Start(fun gmgr -> SetLevelManager(Some(AsteroidsLevel() :> AbstractLevelController)))
-
+    | Some graphics ->
+        let window = graphics.OpenWindow (VideoMode.Window (800,600)) "Asteroids"
+        window.Start(fun gmgr -> SetLevelManager(Some(AsteroidsLevel() :> AbstractLevelController)))
     | None -> printfn "No Graphics Manager registered, check your project references"
 
     0 // return an integer exit code

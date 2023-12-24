@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj": {}
+    "D:\\projects\\RiderProjects\\TwoDEngine3.5\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj": {}
   },
   "projects": {
-    "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj": {
+    "D:\\projects\\RiderProjects\\TwoDEngine3.5\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj",
+        "projectUniqueName": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj",
         "projectName": "AngelCodeTextRenderer",
-        "projectPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj",
+        "projectPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\AngelCodeTextRenderer\\AngelCodeTextRenderer.fsproj",
         "packagesPath": "C:\\Users\\jpkessel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\AngelCodeTextRenderer\\obj\\",
+        "outputPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\AngelCodeTextRenderer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "C:\\Program Files\\dotnet\\sdk\\8.0.100\\FSharp\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -34,8 +33,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj": {
-                "projectPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj"
+              "D:\\projects\\RiderProjects\\TwoDEngine3.5\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj": {
+                "projectPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj"
               }
             }
           }
@@ -82,14 +81,14 @@
         }
       }
     },
-    "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\FSTree\\FSTree.fsproj": {
+    "D:\\projects\\RiderProjects\\TwoDEngine3.5\\FSTree\\FSTree.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\FSTree\\FSTree.fsproj",
+        "projectUniqueName": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\FSTree\\FSTree.fsproj",
         "projectName": "FSTree",
-        "projectPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\FSTree\\FSTree.fsproj",
+        "projectPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\FSTree\\FSTree.fsproj",
         "packagesPath": "C:\\Users\\jpkessel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\FSTree\\obj\\",
+        "outputPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\FSTree\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -104,7 +103,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "C:\\Program Files\\dotnet\\sdk\\8.0.100\\FSharp\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -123,11 +121,6 @@
               "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
               "target": "Package",
               "version": "[8.0.100, )",
-              "generatePathProperty": true
-            },
-            "glfw-net": {
-              "target": "Package",
-              "version": "[3.3.1, )",
               "generatePathProperty": true
             }
           },
@@ -151,14 +144,14 @@
         }
       }
     },
-    "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj": {
+    "D:\\projects\\RiderProjects\\TwoDEngine3.5\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj",
+        "projectUniqueName": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj",
         "projectName": "TDE3ManagerInterfaces",
-        "projectPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj",
+        "projectPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\TDE3ManagerInterfaces\\TDE3ManagerInterfaces.fsproj",
         "packagesPath": "C:\\Users\\jpkessel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\TDE3ManagerInterfaces\\obj\\",
+        "outputPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\TDE3ManagerInterfaces\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -173,7 +166,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "C:\\Program Files\\dotnet\\sdk\\8.0.100\\FSharp\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -181,8 +173,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\FSTree\\FSTree.fsproj": {
-                "projectPath": "C:\\Users\\jpkessel\\Documents\\RiderProjects\\TwoDEngine3\\FSTree\\FSTree.fsproj"
+              "D:\\projects\\RiderProjects\\TwoDEngine3.5\\FSTree\\FSTree.fsproj": {
+                "projectPath": "D:\\projects\\RiderProjects\\TwoDEngine3.5\\FSTree\\FSTree.fsproj"
               }
             }
           }
@@ -206,11 +198,6 @@
             "MathSharp": {
               "target": "Package",
               "version": "[2.0.0-pre, )",
-              "generatePathProperty": true
-            },
-            "glfw-net": {
-              "target": "Package",
-              "version": "[3.3.1, )",
               "generatePathProperty": true
             }
           },

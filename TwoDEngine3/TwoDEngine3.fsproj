@@ -27,7 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\GraphicsManagerGLFW\GraphicsManagerGLFW.fsproj" />
         <ProjectReference Include="..\AngelCodeTextRenderer\AngelCodeTextRenderer.fsproj" />
         <ProjectReference Include="..\InputManagerWinRawInput\InputManagerWinRawInput.fsproj" />
     </ItemGroup>

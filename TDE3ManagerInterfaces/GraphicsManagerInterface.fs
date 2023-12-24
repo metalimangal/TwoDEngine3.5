@@ -18,19 +18,26 @@ type Image =
 type Transform =
     abstract Multiply : Vector -> Vector
     abstract Multiply : Transform -> Transform
+type VideoMode =
+    | FullScreen
+    | FullScreenWindow
+    | Window of X:int32 * Y:int32
     
-
-type GraphicsListener =
+[<AbstractClass>]
+type Window(graphicsManager)=
+    abstract Start : (GraphicsManager -> unit) -> unit
+    abstract Start : unit -> unit
+and GraphicsListener =
     abstract Update : GraphicsManager->uint -> string option
     abstract Render : GraphicsManager -> unit
 
 and GraphicsManager =
+    abstract OpenWindow: VideoMode->string->unit
     abstract GraphicsListeners : GraphicsListener list with get, set
     abstract ScreenSize : Vector
     abstract LoadImage : Stream -> Image
-    abstract DrawImage : Image -> unit
-    abstract Start : (GraphicsManager -> unit) -> unit
-    abstract Start : unit -> unit
+    abstract DrawImage : Transform->Image -> unit
+
     abstract IdentityTransform : Transform with get
     abstract RotationTransform : float32 -> Transform
     abstract TranslationTransform : float32-> float32 -> Transform
