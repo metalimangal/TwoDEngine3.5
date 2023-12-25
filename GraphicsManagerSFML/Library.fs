@@ -81,10 +81,23 @@ type GraphicsManagerSFML =
         
         member this.GraphicsListeners = failwith "todo"
         member this.GraphicsListeners with set value = failwith "todo"
-        member this.IdentityTransform = failwith "todo"
+        member this.IdentityTransform =
+            TransformSFML(SFTransform.Identity)
         member this.LoadImage(stream) = 
-            new ImageSFML(new SFTexture(stream))
-        member this.RotationTransform(var0) = failwith "todo"
-        member this.ScaleTransform(var0) (var1) = failwith "todo"
-        member this.ScreenSize = failwith "todo"
-        member this.TranslationTransform(var0) (var1) = failwith "todo"
+            ImageSFML(new SFTexture(stream))
+        member this.RotationTransform(degrees) =
+            let xform = SFTransform()
+            xform.Rotate(degrees)
+            TransformSFML(xform)
+        member this.ScaleTransform(x) (y) =
+            let xform = SFTransform()
+            xform.Scale(x,y)
+            TransformSFML(xform)
+        member this.ScreenSize =
+            VectorSFML(Vector2f(
+                float32(SFVideoMode.DesktopMode.Width),
+                float32(SFVideoMode.DesktopMode.Height)))
+        member this.TranslationTransform(x) (y) =
+            let xform = SFTransform()
+            xform.Translate(x,y)
+            TransformSFML(xform)
