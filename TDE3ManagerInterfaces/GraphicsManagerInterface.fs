@@ -3,40 +3,40 @@
 open System.IO
 open System.Numerics
 
-type Vector = System.Numerics.Vector2
-let Vector(x,y) = Vector2(x,y)
-   
+type Vector = 
+   abstract Multiply : float32 -> Vector
      
 type Rectangle(pos, sz) =
-    member val Position:Vector = pos
+    member val Position:Vector = pos with get
     member val Size:Vector =sz with get
-type Image =
-
-    abstract SubImage : Rectangle -> Image
-    abstract Size : Vector with get
-
 type Transform =
     abstract Multiply : Vector -> Vector
     abstract Multiply : Transform -> Transform
 type VideoMode =
     | FullScreen
     | FullScreenWindow
-    | Window of X:int32 * Y:int32
+    | Window of X:uint32 * Y:uint32
     
 [<AbstractClass>]
 type Window(graphicsManager)=
-    abstract Start : (GraphicsManager -> unit) -> unit
+    member val graphics  = graphicsManager with get
+    abstract Start : (Window -> unit) -> unit
     abstract Start : unit -> unit
-and GraphicsListener =
+type Image =
+    abstract SubImage : Rectangle -> Image
+    abstract Size : Vector with get
+    abstract Draw : Window->Transform->unit    
+    
+type GraphicsListener =
     abstract Update : GraphicsManager->uint -> string option
     abstract Render : GraphicsManager -> unit
 
 and GraphicsManager =
-    abstract OpenWindow: VideoMode->string->unit
+    abstract OpenWindow : VideoMode->string->Window
     abstract GraphicsListeners : GraphicsListener list with get, set
     abstract ScreenSize : Vector
     abstract LoadImage : Stream -> Image
-    abstract DrawImage : Transform->Image -> unit
+   
 
     abstract IdentityTransform : Transform with get
     abstract RotationTransform : float32 -> Transform
