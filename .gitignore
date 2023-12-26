@@ -3,9 +3,8 @@
 **/*.pdb
 **/*.dll
 **/*.cache
-**/obj/**/
+**/obj/*
 **/*.user
 
 
 
-*.json
