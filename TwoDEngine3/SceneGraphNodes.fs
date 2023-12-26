@@ -1,9 +1,10 @@
 ﻿module TwoDEngine3.SceneGraphNodes
 
-open TDE3ManagerInterfaces.SceneGraphInterface
-open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
 
 
+
+           
+            
 type Sprite(img:Image,xform:Transform,veloc:Vector) =
     let image= img
     let transform = xform

@@ -3,7 +3,7 @@ open SFML.Graphics
 open SFML.System
 open SFML.Window
 open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
-open System.IO
+open System.Numerics
 
 
 //aliases
@@ -16,16 +16,13 @@ type SFVideoMode = SFML.Window.VideoMode
 type SFRenderStates = SFML.Graphics.RenderStates
 
     
-type VectorSFML(sfmlVector:Vector2f)=
-    member val sfmlVector = sfmlVector with get
-    interface Vector with
-        override this.Multiply other=
-            VectorSFML(sfmlVector * other)
+
 type TransformSFML(sfXform:SFTransform) =
     member val sfXform = sfXform with get
     interface Transform with
-      override this.Multiply (otherVec:Vector) : Vector =
-          new VectorSFML(sfXform.TransformPoint((otherVec:?>VectorSFML).sfmlVector))
+      override this.Multiply (otherVec:Vector2) : Vector2 =
+          let result =sfXform.TransformPoint(Vector2f(otherVec.X,otherVec.Y))
+          Vector2(result.X,result.Y)
       override this.Multiply (otherXform:Transform) : Transform =
           TransformSFML(sfXform * (otherXform:?>TransformSFML).sfXform)
 
@@ -39,11 +36,11 @@ type ImageSFML(tex:SFTexture,rect) =
     interface Image with
         member this.Size =
             let size = sprite.TextureRect
-            VectorSFML(Vector2f(float32(sprite.TextureRect.Width),
-                       float32(sprite.TextureRect.Height)))
+            Vector2(float32(sprite.TextureRect.Width),
+                       float32(sprite.TextureRect.Height))
         member this.SubImage(rect:Rectangle) =
-             let pos = (rect.Position :?> VectorSFML).sfmlVector
-             let sz = (rect.Size :?> VectorSFML).sfmlVector
+             let pos = rect.Position 
+             let sz = rect.Size 
              ImageSFML(tex,new IntRect(
                        int32(pos.X),
                        int32(pos.Y),
@@ -94,9 +91,9 @@ type GraphicsManagerSFML =
             xform.Scale(x,y)
             TransformSFML(xform)
         member this.ScreenSize =
-            VectorSFML(Vector2f(
+            Vector2(
                 float32(SFVideoMode.DesktopMode.Width),
-                float32(SFVideoMode.DesktopMode.Height)))
+                float32(SFVideoMode.DesktopMode.Height))
         member this.TranslationTransform(x) (y) =
             let xform = SFTransform()
             xform.Translate(x,y)

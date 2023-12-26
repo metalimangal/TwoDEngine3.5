@@ -4,6 +4,7 @@
 **/*.dll
 **/*.cache
 **/obj/*
+**/bin/*
 **/*.user
 
 
