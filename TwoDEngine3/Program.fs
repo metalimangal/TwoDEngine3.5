@@ -1,19 +1,12 @@
-// Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
-
+module TwoDEngine3
 open System
-
-
 open AngelCodeTextRenderer
-
-open GraphicsManagerGLFW
 open InputManagerWinRawInput
-open SceneGraph2D
-open TwoDEngine3
+open GraphicsManagerSFML
 open TwoDEngine3.AsteroidsLevel
-open TwoDEngine3.ExampleLevel
 open TwoDEngine3.LevelManagerInterface
 open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
-open TwoDEngine3.ManagerInterfaces.InputManager
+
 
 
 
