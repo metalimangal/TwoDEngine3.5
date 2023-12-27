@@ -6,7 +6,7 @@ open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
 
 [<AbstractClass>]
 type RenderNode(childrenArray:RenderNode list,
-                graphicsManager:GraphicsManager) =
+                window:Window) =
     abstract member Render: Transform-> unit
     default this.Render xform =
         this.RenderChildren xform
@@ -25,31 +25,31 @@ type RenderNode(childrenArray:RenderNode list,
  See file header for more information on use
  ****************************************)
  
-let ProcessFuncs gm (funcs:(GraphicsManager->RenderNode) list) =
+let ProcessFuncs window (funcs:(Window->RenderNode) list) =
     funcs
-    |> List.map (fun func -> func gm )
+    |> List.map (fun func -> func window )
     
 type RootNode(childrenArray:RenderNode list,
-                graphicsManager:GraphicsManager) =
-   inherit RenderNode(childrenArray,graphicsManager)
+                window:Window) =
+   inherit RenderNode(childrenArray,window)
 
    override this.Update(deltaMS) =
-       new RootNode((this.UpdateChildren deltaMS),graphicsManager)
-let  RENDERTREE gm childrenArray =
+       new RootNode((this.UpdateChildren deltaMS),window)
+let  RENDERTREE window childrenArray =
     new RootNode(
-        ProcessFuncs gm childrenArray,
-        gm)
+        ProcessFuncs window childrenArray,
+        window)
     
 type SpriteNode(img:Image,
                 childrenArray:RenderNode list,
-                graphicsManager:GraphicsManager) =
-    inherit RenderNode(childrenArray, graphicsManager)
+                window:Window) =
+    inherit RenderNode(childrenArray, window)
     override this.Render xform  =
-       graphicsManager.DrawImage img
+       img.Draw window xform
        this.RenderChildren xform
 
     override this.Update(deltaMS) =
-        new SpriteNode(img, (this.UpdateChildren deltaMS),graphicsManager)
+        new SpriteNode(img, (this.UpdateChildren deltaMS),window)
 let SPRITE img childrenArray graphicsManager =
     let childnodes = ProcessFuncs graphicsManager childrenArray
     new SpriteNode(img, childnodes, graphicsManager) :> RenderNode
@@ -57,33 +57,33 @@ let SPRITE img childrenArray graphicsManager =
 [<AbstractClass>]       
 type GenericTransformNode(transform:Transform,
                           childrenArray:RenderNode list,
-                          gm:GraphicsManager) =
-    inherit RenderNode(childrenArray,gm)
+                          window:Window) =
+    inherit RenderNode(childrenArray,window)
 
     override this.Render xform  =
         this.RenderChildren (xform.Multiply transform)   
         
 type RotateNode(degrees:float32,  childrenArray:RenderNode list,
-            gm:GraphicsManager) =
-    inherit GenericTransformNode(gm.RotationTransform degrees,
-                             childrenArray,gm)
+            window:Window) =
+    inherit GenericTransformNode(window.graphics.RotationTransform degrees,
+                             childrenArray,window)
 
     override this.Update(deltaMS) =
-        new RotateNode(degrees,(this.UpdateChildren deltaMS),gm)
-let ROTATE degrees childrenArray graphicsManager =
-     let childnodes = ProcessFuncs graphicsManager childrenArray
-     new RotateNode(degrees, childnodes, graphicsManager)
+        new RotateNode(degrees,(this.UpdateChildren deltaMS),window)
+let ROTATE degrees childrenArray window =
+     let childnodes = ProcessFuncs window childrenArray
+     new RotateNode(degrees, childnodes, window)
      
 type TranslateNode(x:float32, y:float32,
                     childrenArray:RenderNode list,
-                    gm:GraphicsManager) =
-    inherit GenericTransformNode(gm.TranslationTransform x y,
-                             childrenArray,gm)
+                    window:Window) =
+    inherit GenericTransformNode(window.graphics.TranslationTransform x y,
+                             childrenArray,window)
 
     override this.Update(deltaMS) =
-        new TranslateNode(x,y,(this.UpdateChildren deltaMS),gm)
-let TRANSLATE x y childrenArray graphicsManager =
-     let childnodes = ProcessFuncs graphicsManager childrenArray
-     new TranslateNode(x,y, childnodes, graphicsManager)    
+        new TranslateNode(x,y,(this.UpdateChildren deltaMS),window)
+let TRANSLATE x y childrenArray window =
+     let childnodes = ProcessFuncs window childrenArray
+     new TranslateNode(x,y, childnodes, window)    
     
  

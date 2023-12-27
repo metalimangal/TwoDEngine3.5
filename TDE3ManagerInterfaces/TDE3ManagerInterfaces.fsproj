@@ -22,8 +22,4 @@
         <PackageReference Include="MathSharp" Version="2.0.0-pre" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\FSTree\FSTree.fsproj" />
-    </ItemGroup>
-
 </Project>
