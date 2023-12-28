@@ -87,11 +87,11 @@ type GraphicsManagerSFML() =
         member this.LoadImage(stream) = 
             ImageSFML(new SFTexture(stream))
         member this.RotationTransform(degrees) =
-            let xform = SFTransform()
+            let xform = SFTransform.Identity
             xform.Rotate(degrees)
             TransformSFML(xform)
         member this.ScaleTransform(x) (y) =
-            let xform = SFTransform()
+            let xform = SFTransform.Identity
             xform.Scale(x,y)
             TransformSFML(xform)
         member this.ScreenSize =
@@ -99,6 +99,6 @@ type GraphicsManagerSFML() =
                 float32(SFVideoMode.DesktopMode.Width),
                 float32(SFVideoMode.DesktopMode.Height))
         member this.TranslationTransform(x) (y) =
-            let xform = SFTransform()
+            let xform = SFTransform.Identity
             xform.Translate(x,y)
             TransformSFML(xform)
