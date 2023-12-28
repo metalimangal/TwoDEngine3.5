@@ -9,7 +9,8 @@ open TDE3ManagerInterfaces.InputDevices
 open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
 open TDE3ManagerInterfaces.RenderTree
 open TDE3ManagerInterfaces.TextRendererInterfaces
-open TDE3ManagerInterfaces.RenderTree
+open System.Drawing
+type SysColor = System.Drawing.Color
 
 (*   Asteriods text program by JPK *)
 let TryGetManager<'a> () =
@@ -42,8 +43,8 @@ let main argv =
     let atlas = graphics.LoadImage filestream
     let shipImage = atlas.SubImage (
                             Rectangle(
-                                Vector2(3f, 2f),
-                                Vector2(25f, 30f)
+                                Point(3, 2),
+                                Size(25, 30)
                             )
                          )
     
@@ -55,7 +56,9 @@ let main argv =
                 SPRITE shipImage []
             ] 
         ]
-        renderTree.Render window.graphics.IdentityTransform 
+        window.Clear Color.Black
+        renderTree.Render window.graphics.IdentityTransform
+        window.Show()
     )
     while(true) do  System.Threading.Thread.Sleep 10
     0

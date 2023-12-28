@@ -1,11 +1,12 @@
 ﻿module TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
 
+open System.Drawing
 open System.IO
 open System.Numerics
 
-type Rectangle(position:Vector2,size:Vector2) =
-    member val Position  = position with get
-    member val Size = size with get
+type SysColor = System.Drawing.Color
+type SysRectangle = System.Drawing.Rectangle
+
     
 type Transform =
     abstract Multiply : Vector2 -> Vector2
@@ -20,7 +21,10 @@ type VideoMode =
  type Window(graphicsManager:GraphicsManager)=
     member val graphics  = graphicsManager with get
     abstract Start : (Window -> unit) -> unit
-    abstract Start : unit -> unit 
+    abstract Start : unit -> unit
+    abstract Close : unit -> unit
+    abstract Clear : SysColor -> unit
+    abstract Show : unit -> unit
 and GraphicsListener =
     abstract Update : GraphicsManager->uint -> string option
     abstract Render : GraphicsManager -> unit

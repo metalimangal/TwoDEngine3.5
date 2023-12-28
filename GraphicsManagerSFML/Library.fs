@@ -4,6 +4,7 @@ open SFML.System
 open SFML.Window
 open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
 open System.Numerics
+open System.Drawing
 
 
 //aliases
@@ -14,7 +15,7 @@ type SFWindow =  SFML.Graphics.RenderWindow
 type SFTransform = SFML.Graphics.Transform
 type SFVideoMode = SFML.Window.VideoMode
 type SFRenderStates = SFML.Graphics.RenderStates
-
+type SFColor = SFML.Graphics.Color
     
 
 type TransformSFML(sfXform:SFTransform) =
@@ -39,13 +40,10 @@ type ImageSFML(tex:SFTexture,rect) =
             Vector2(float32(sprite.TextureRect.Width),
                        float32(sprite.TextureRect.Height))
         member this.SubImage(rect:Rectangle) =
-             let pos = rect.Position 
-             let sz = rect.Size 
-             ImageSFML(tex,new IntRect(
-                       int32(pos.X),
-                       int32(pos.Y),
-                       int32(sz.X),
-                       int32(sz.Y)))
+            ImageSFML(tex,IntRect(
+                Vector2i(int(rect.X),int(rect.Y)),
+                Vector2i(int(rect.Width),int(rect.Height))))
+             
 
        
         member this.Draw(window:Window) (xform:Transform) =
@@ -61,8 +59,14 @@ and WindowSFML(sfmlWindow:SFWindow,gm:GraphicsManager) =
             let state = SFRenderStates(xform)
             sfmlWindow.Draw(sprite,state)
             ()
+
+        override this.Clear(color) =
+            sfmlWindow.Clear (SFColor(color.R,color.G,color.B,color.A))
+            ()
+        override this.Close() = failwith "todo"
+        override this.Show() = sfmlWindow.Display()
             
-type GraphicsManagerSFML =
+type GraphicsManagerSFML() =
     interface GraphicsManager with
         override this.OpenWindow videoMode name  =
             match videoMode with

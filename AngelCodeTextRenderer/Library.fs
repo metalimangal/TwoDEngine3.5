@@ -7,7 +7,7 @@ open Cyotek.Drawing.BitmapFont
 open ManagerRegistry
 open TDE3ManagerInterfaces.TextRendererInterfaces
 open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
-
+open System.Drawing
 
 
 [<Manager("Text renderer that uses angelcode bitmap fonts",
@@ -49,8 +49,8 @@ and AngelCodeText(text: string, font: AngelCodeFont) =
                 let lastChar = snd state
                 let acChar: Character = font.GetCharacter char
                 let acImage: Image = font.GetPage(acChar.TexturePage)
-                let rectPos = Vector2 (float32 acChar.X, float32 acChar.Y)
-                let rectSz = Vector2 (float32 acChar.Width, float32 acChar.Height)
+                let rectPos = Point (int acChar.X, int acChar.Y)
+                let rectSz = Size (int acChar.Width, int acChar.Height)
                 let charImage = acImage.SubImage(Rectangle(rectPos, rectSz))
                 let kern = font.GetKern(lastChar, char)
                 let newX = pos.X + (float32 acChar.Width) + kern
