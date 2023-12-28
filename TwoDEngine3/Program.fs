@@ -6,8 +6,8 @@ open AngelCodeTextRenderer
 open InputManagerWinRawInput
 open GraphicsManagerSFML
 open TDE3ManagerInterfaces.InputDevices
-open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
-open TDE3ManagerInterfaces.RenderTree
+open TDE3ManagerInterfaces.GraphicsManagerInterface
+open TDE3ManagerInterfaces.WorldTree
 open TDE3ManagerInterfaces.TextRendererInterfaces
 open System.Drawing
 type SysColor = System.Drawing.Color

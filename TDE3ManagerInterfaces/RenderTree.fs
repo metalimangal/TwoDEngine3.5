@@ -1,4 +1,6 @@
-﻿module TDE3ManagerInterfaces.RenderTree
+﻿
+module TDE3ManagerInterfaces.RenderTree
+(**** DINOCODE
 
 open System
 open TwoDEngine3.ManagerInterfaces
@@ -86,4 +88,4 @@ let TRANSLATE x y childrenArray window =
      let childnodes = ProcessFuncs window childrenArray
      new TranslateNode(x,y, childnodes, window)  :> RenderNode 
     
- 
+ ***********************************************)

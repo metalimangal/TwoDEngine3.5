@@ -1,6 +1,5 @@
 ﻿module TDE3ManagerInterfaces.TextRendererInterfaces
-
-open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
+open TDE3ManagerInterfaces.GraphicsManagerInterface
 type Font =
     abstract member Name : string
     abstract member Size : int
@@ -11,5 +10,5 @@ and [<AbstractClass>] Text(text:string,font:Font) =
 
 and TextManager =
     abstract member FontList : string list
-    abstract member LoadFont : string -> Font
+    abstract member LoadFont : Window -> string -> Font
    

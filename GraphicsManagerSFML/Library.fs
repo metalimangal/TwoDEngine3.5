@@ -1,8 +1,9 @@
 ﻿namespace GraphicsManagerSFML
+open System.IO
 open SFML.Graphics 
 open SFML.System
 open SFML.Window
-open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
+open TDE3ManagerInterfaces.GraphicsManagerInterface
 open System.Numerics
 open System.Drawing
 
@@ -18,7 +19,7 @@ type SFRenderStates = SFML.Graphics.RenderStates
 type SFColor = SFML.Graphics.Color
     
 
-type TransformSFML(sfXform:SFTransform) =
+type TransformSFML (sfXform:SFTransform) =
     member val sfXform = sfXform with get
     interface Transform with
       override this.Multiply (otherVec:Vector2) : Vector2 =
@@ -28,7 +29,7 @@ type TransformSFML(sfXform:SFTransform) =
           TransformSFML(sfXform * (otherXform:?>TransformSFML).sfXform)
 
 type ImageSFML(tex:SFTexture,rect) =
-    let sprite = new SFSprite(tex,rect)
+    member val sprite = new SFSprite(tex,rect) with get
     
     new(tex) =
         ImageSFML(tex,IntRect(
@@ -36,9 +37,9 @@ type ImageSFML(tex:SFTexture,rect) =
             Vector2i(int(tex.Size.X),int(tex.Size.Y))))
     interface Image with
         member this.Size =
-            let size = sprite.TextureRect
-            Vector2(float32(sprite.TextureRect.Width),
-                       float32(sprite.TextureRect.Height))
+            let size = this.sprite.TextureRect
+            Vector2(float32(this.sprite.TextureRect.Width),
+                       float32(this.sprite.TextureRect.Height))
         member this.SubImage(rect:Rectangle) =
             ImageSFML(tex,IntRect(
                 Vector2i(int(rect.X),int(rect.Y)),
@@ -46,8 +47,7 @@ type ImageSFML(tex:SFTexture,rect) =
              
 
        
-        member this.Draw(window:Window) (xform:Transform) =
-            (window:?>WindowSFML).DrawSprite (xform:?>TransformSFML).sfXform sprite
+        
 and WindowSFML(sfmlWindow:SFWindow,gm:GraphicsManager) =
     inherit Window(gm) with
         member val sfmlWindow = sfmlWindow with get
@@ -55,10 +55,31 @@ and WindowSFML(sfmlWindow:SFWindow,gm:GraphicsManager) =
             startFunc this
         override this.Start() =
             ()
-        member this.DrawSprite xform sprite =
-            let state = SFRenderStates(xform)
-            sfmlWindow.Draw(sprite,state)
+        override this.DrawImage (xform:Transform) (image:Image) =
+            let state = SFRenderStates((xform:?>TransformSFML).sfXform)
+            let sprite = (image:?>ImageSFML).sprite
+            sfmlWindow.Draw(sprite,state) 
             ()
+        override this.IdentityTransform =
+            TransformSFML(SFTransform.Identity)
+        override this.LoadImage(stream:Stream) = 
+            ImageSFML(new SFTexture(stream))
+        override this.RotationTransform(degrees) =
+            let xform = SFTransform.Identity
+            xform.Rotate(degrees)
+            TransformSFML(xform)
+        override this.ScaleTransform(x:float32) (y:float32) =
+            let xform = SFTransform.Identity
+            xform.Scale(x,y)
+            TransformSFML(xform)
+        override this.ScreenSize =
+            Vector2(
+                float32(SFVideoMode.DesktopMode.Width),
+                float32(SFVideoMode.DesktopMode.Height))
+        override this.TranslationTransform(x) (y) =
+            let xform = SFTransform.Identity
+            xform.Translate(x,y)
+            TransformSFML(xform)
 
         override this.Clear(color) =
             sfmlWindow.Clear (SFColor(color.R,color.G,color.B,color.A))
@@ -82,23 +103,4 @@ type GraphicsManagerSFML() =
         
         member this.GraphicsListeners = failwith "todo"
         member this.GraphicsListeners with set value = failwith "todo"
-        member this.IdentityTransform =
-            TransformSFML(SFTransform.Identity)
-        member this.LoadImage(stream) = 
-            ImageSFML(new SFTexture(stream))
-        member this.RotationTransform(degrees) =
-            let xform = SFTransform.Identity
-            xform.Rotate(degrees)
-            TransformSFML(xform)
-        member this.ScaleTransform(x) (y) =
-            let xform = SFTransform.Identity
-            xform.Scale(x,y)
-            TransformSFML(xform)
-        member this.ScreenSize =
-            Vector2(
-                float32(SFVideoMode.DesktopMode.Width),
-                float32(SFVideoMode.DesktopMode.Height))
-        member this.TranslationTransform(x) (y) =
-            let xform = SFTransform.Identity
-            xform.Translate(x,y)
-            TransformSFML(xform)
+        

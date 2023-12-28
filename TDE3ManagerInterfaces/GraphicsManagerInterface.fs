@@ -1,4 +1,4 @@
-﻿module TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
+﻿module TDE3ManagerInterfaces.GraphicsManagerInterface
 
 open System.Drawing
 open System.IO
@@ -25,6 +25,14 @@ type VideoMode =
     abstract Close : unit -> unit
     abstract Clear : SysColor -> unit
     abstract Show : unit -> unit
+    abstract LoadImage : Stream -> Image
+   
+    abstract IdentityTransform : Transform with get
+    abstract RotationTransform : float32 -> Transform
+    abstract TranslationTransform : float32-> float32 -> Transform
+    abstract ScaleTransform : float32-> float32 -> Transform
+    abstract DrawImage : Transform->Image->unit
+    abstract ScreenSize : Vector2 with get
 and GraphicsListener =
     abstract Update : GraphicsManager->uint -> string option
     abstract Render : GraphicsManager -> unit
@@ -32,16 +40,10 @@ and GraphicsListener =
 and GraphicsManager =
     abstract OpenWindow : VideoMode->string->Window
     abstract GraphicsListeners : GraphicsListener list with get, set
-    abstract ScreenSize : Vector2
-    abstract LoadImage : Stream -> Image
    
-
-    abstract IdentityTransform : Transform with get
-    abstract RotationTransform : float32 -> Transform
-    abstract TranslationTransform : float32-> float32 -> Transform
-    abstract ScaleTransform : float32-> float32 -> Transform
+    
 
 and Image =
     abstract SubImage : Rectangle -> Image
     abstract Size : Vector2 with get
-    abstract Draw : Window->Transform->unit  
+ 

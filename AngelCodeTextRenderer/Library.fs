@@ -6,7 +6,7 @@ open FSharp.Collections
 open Cyotek.Drawing.BitmapFont
 open ManagerRegistry
 open TDE3ManagerInterfaces.TextRendererInterfaces
-open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
+open TDE3ManagerInterfaces.GraphicsManagerInterface
 open System.Drawing
 
 
@@ -15,10 +15,11 @@ open System.Drawing
 type AngelCodeTextRenderer() =
     interface TextManager with
         member this.FontList = Directory.GetFiles("AngelcodeFonts") |> Array.toList
-        member this.LoadFont(fontName) =
-            BitmapFontLoader.LoadFontFromFile(fontName) |> AngelCodeFont :> Font
+        member this.LoadFont window fontName =
+            let bmFont = BitmapFontLoader.LoadFontFromFile(fontName)
+            AngelCodeFont (window,bmFont) :> Font
 
-and AngelCodeFont(bmFont) =
+and AngelCodeFont(window:Window, bmFont:BitmapFont) =
     let bitmapFont = bmFont
     let graphics = ManagerRegistry.getManager<GraphicsManager> ()
     let pages =
@@ -26,7 +27,7 @@ and AngelCodeFont(bmFont) =
         |> Array.fold
             (fun (pageMap: Map<int, Lazy<Image>>) page ->
                 let fileStream = File.Open(page.FileName, FileMode.Open)
-                let lazyImage = lazy (graphics.Value.LoadImage fileStream)
+                let lazyImage = lazy (window.LoadImage fileStream)
                 Map.add page.Id lazyImage pageMap)
             Map.empty
     member this.GetPage(id) = pages.[id].Force()
@@ -54,9 +55,9 @@ and AngelCodeText(text: string, font: AngelCodeFont) =
                 let charImage = acImage.SubImage(Rectangle(rectPos, rectSz))
                 let kern = font.GetKern(lastChar, char)
                 let newX = pos.X + (float32 acChar.Width) + kern
-                let xlateXform = graphics.TranslationTransform newX pos.Y
+                let xlateXform = window.TranslationTransform newX pos.Y
                 let xform = xlateXform.Multiply xform
-                charImage.Draw window xform
+                window.DrawImage xform charImage
                 (Vector2(newX, pos.Y), char)
             ) (Vector2(0f,0f),'\n')
         |> ignore
