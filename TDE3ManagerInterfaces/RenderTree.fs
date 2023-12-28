@@ -72,7 +72,7 @@ type RotateNode(degrees:float32,  childrenArray:RenderNode list,
         new RotateNode(degrees,(this.UpdateChildren deltaMS),window)
 let ROTATE degrees childrenArray window =
      let childnodes = ProcessFuncs window childrenArray
-     new RotateNode(degrees, childnodes, window)
+     new RotateNode(degrees, childnodes, window) :> RenderNode
      
 type TranslateNode(x:float32, y:float32,
                     childrenArray:RenderNode list,
@@ -84,6 +84,6 @@ type TranslateNode(x:float32, y:float32,
         new TranslateNode(x,y,(this.UpdateChildren deltaMS),window)
 let TRANSLATE x y childrenArray window =
      let childnodes = ProcessFuncs window childrenArray
-     new TranslateNode(x,y, childnodes, window)    
+     new TranslateNode(x,y, childnodes, window)  :> RenderNode 
     
  

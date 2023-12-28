@@ -1,39 +1,24 @@
 module TwoDEngine3
 open System
+open System.Numerics
+open System.IO
 open AngelCodeTextRenderer
 open InputManagerWinRawInput
 open GraphicsManagerSFML
-open TwoDEngine3.AsteroidsLevel
-open TwoDEngine3.LevelManagerInterface
+open TDE3ManagerInterfaces.InputDevices
 open TwoDEngine3.ManagerInterfaces.GraphicsManagerInterface
+open TDE3ManagerInterfaces.RenderTree
+open TDE3ManagerInterfaces.TextRendererInterfaces
+open TDE3ManagerInterfaces.RenderTree
+
+(*   Asteriods text program by JPK *)
+let TryGetManager<'a> () =
+    match ManagerRegistry.getManager<'a> () with
+    | Some manager -> manager
+    | None -> failwith "Manager not found"
 
 
 
-
-let mutable currentLevelController: AbstractLevelController option = None
-
-let SetLevelManager newLevelManger : unit =
-    match currentLevelController with
-    | Some oldLevelMgr ->
-        oldLevelMgr.Close()
-        ()
-    | None -> ()
-
-    currentLevelController <- newLevelManger
-
-    match currentLevelController with
-    | Some mgr -> mgr.Open()
-    | None -> ()
-
-let Update deltaMS =
-    printfn $"Update deltams=%d{deltaMS}"
-    None // no errors or other reason to quit
-
-let Render unit =
-    printfn "Render"
-    ()
-
-// test func
 
 [<EntryPoint>]
 [<STAThread>]
@@ -49,11 +34,28 @@ let main argv =
     typedefof<InputManagerWinRawInput>
     |> ManagerRegistry.addManager
     
-
-    match ManagerRegistry.getManager<GraphicsManager> () with
-    | Some graphics ->
-        let window = graphics.OpenWindow (VideoMode.Window (800,600)) "Asteroids"
-        window.Start(fun gmgr -> SetLevelManager(Some(AsteroidsLevel() :> AbstractLevelController)))
-    | None -> printfn "No Graphics Manager registered, check your project references"
-
-    0 // return an integer exit code
+    let graphics = TryGetManager<GraphicsManager> ()
+    let textRenderer = TryGetManager<TextManager> ()
+    let inputDeviceManager = TryGetManager<InputDeviceInterface> ()
+    
+    use filestream = File.Open("Assets/asteroids-arcade.png", FileMode.Open)
+    let atlas = graphics.LoadImage filestream
+    let shipImage = atlas.SubImage (
+                            Rectangle(
+                                Vector2(3f, 2f),
+                                Vector2(25f, 30f)
+                            )
+                         )
+    
+    let window = graphics.OpenWindow (Windowed (800u,600u)) "Asteroids"
+    //let font = textRenderer.LoadFont TODO
+    window.Start(fun window ->
+        let renderTree=RENDERTREE window [
+            TRANSLATE 400f 300f [
+                SPRITE shipImage []
+            ] 
+        ]
+        renderTree.Render window.graphics.IdentityTransform 
+    )
+    while(true) do  System.Threading.Thread.Sleep 10
+    0

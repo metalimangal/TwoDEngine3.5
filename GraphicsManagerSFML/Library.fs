@@ -72,7 +72,7 @@ type GraphicsManagerSFML =
             | FullScreenWindow ->
                 WindowSFML(new SFWindow(SFVideoMode.DesktopMode,
                            name),this)
-            | Window (x, y) ->
+            | Windowed (x, y) ->
                 WindowSFML(new SFWindow(SFVideoMode(x,y),
                            name),this)
         

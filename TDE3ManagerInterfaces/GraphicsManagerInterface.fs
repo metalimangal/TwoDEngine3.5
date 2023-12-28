@@ -13,7 +13,7 @@ type Transform =
 type VideoMode =
     | FullScreen
     | FullScreenWindow
-    | Window of X:uint32 * Y:uint32
+    | Windowed of X:uint32 * Y:uint32
     
 
  [<AbstractClass>]
