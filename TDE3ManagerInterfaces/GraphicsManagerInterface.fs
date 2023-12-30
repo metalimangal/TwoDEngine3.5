@@ -33,6 +33,7 @@ type VideoMode =
     abstract ScaleTransform : float32-> float32 -> Transform
     abstract DrawImage : Transform->Image->unit
     abstract ScreenSize : Vector2 with get
+    abstract IsOpen : unit -> bool
 and GraphicsListener =
     abstract Update : GraphicsManager->uint -> string option
     abstract Render : GraphicsManager -> unit

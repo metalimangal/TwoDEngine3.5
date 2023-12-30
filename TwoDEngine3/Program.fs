@@ -2,6 +2,7 @@ module TwoDEngine3
 open System
 open System.Numerics
 open System.IO
+open System.Runtime.InteropServices.JavaScript
 open AngelCodeTextRenderer
 open InputManagerWinRawInput
 open GraphicsManagerSFML
@@ -38,7 +39,14 @@ let renderDispatch  (rc: RenderContext<RenderNode, AppRenderContext>)(node:Rende
         | GenericTransform gt -> gt |> GenericTransformNode.render rc
         | Rotate r -> r |> RotateNode.render rc
         | Translate t -> t |> TranslateNode.render rc
-        
+let updateDispatch  (rc: UpdateContext<RenderNode, AppRenderContext>)(node:RenderNode) :
+    UpdateContext<RenderNode, AppRenderContext> =
+        match node with
+        | Collection c -> c |> CollectionNode.update rc
+        | Sprite s -> s |> SpriteNode.update rc
+        | GenericTransform gt -> gt |> GenericTransformNode.update rc
+        | Rotate r -> r |> RotateNode.update rc
+        | Translate t -> t |> TranslateNode.update rc        
 
 
 [<EntryPoint>]
@@ -73,22 +81,29 @@ let main argv =
    
    
     window.Start(fun window ->
-        let worldTree = 
+        let mutable worldTree = 
                  Translate(TranslateNode.create 400.0f 300.0f [
                      Sprite(SpriteNode.create shipImage [])
                  ])
              
             
-        let worldContext:RenderContext<'N, 'A> =
+        let renderContext:RenderContext<'N, 'A> =
             { Window=window; Transform=window.IdentityTransform;
               RenderDispatch = renderDispatch; AppData={MyAppData="Hello World"}}
            
-              
+        let updateContext:UpdateContext<'N, 'A> =
+            { UpdateDispatch = updateDispatch; AppData={MyAppData="Hello World"};
+              NewTree = None}     
                
+        while window.IsOpen() do
+            window.Clear Color.Black
+            renderDispatch renderContext worldTree |> ignore
+            window.Show()
+            updateDispatch updateContext worldTree
+            |> function
+                | {NewTree = Some newTree} -> worldTree <- newTree
+                | _ -> ()
        
-        window.Clear Color.Black
-        renderDispatch worldContext worldTree |> ignore
-        window.Show()
     )
     while(true) do  System.Threading.Thread.Sleep 10
     0

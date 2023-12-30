@@ -86,6 +86,7 @@ and WindowSFML(sfmlWindow:SFWindow,gm:GraphicsManager) =
             ()
         override this.Close() = failwith "todo"
         override this.Show() = sfmlWindow.Display()
+        override this.IsOpen() = sfmlWindow.IsOpen
             
 type GraphicsManagerSFML() =
     interface GraphicsManager with

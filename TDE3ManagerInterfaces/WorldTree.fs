@@ -33,7 +33,7 @@ type RenderContext<'N, 'A> =
 and RenderDispatch<'N, 'A> = RenderContext<'N, 'A> -> 'N -> RenderContext<'N, 'A>
 
 type UpdateContext<'N, 'A> =
-    { UpdateDispatch: UpdateDispatch<'N, 'A> ; NewTree:'N; AppData: 'A }
+    { UpdateDispatch: UpdateDispatch<'N, 'A> ; NewTree:'N option; AppData: 'A }
 and UpdateDispatch<'N, 'A> = UpdateContext<'N, 'A> -> 'N -> UpdateContext<'N, 'A>
 
 // 'SN is used to constrain the type of the children of the node
@@ -87,7 +87,7 @@ module GenericTransformNode =
         let newContext = { renderContext with Transform = renderContext.Transform.Multiply node.Transform }
         let afterContext = RenderNode.renderChildren newContext node
         { renderContext with AppData = afterContext.AppData }
-    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+    let update (updateContext: UpdateContext<'N, 'A>) (node:GenericTransformNode<'N>) =
         updateContext // unchanged
 
 type RotateNode<'N> = { Degrees:float32 ; Children: 'N list }
@@ -101,7 +101,7 @@ module RotateNode =
         let newContext = { renderContext with Transform = renderContext.Transform.Multiply (renderContext.Window.RotationTransform node.Degrees) }
         let afterContext = RenderNode.renderChildren newContext node
         { renderContext with AppData = afterContext.AppData }
-    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+    let update (updateContext: UpdateContext<'N, 'A>) (node:RotateNode<'N>) =
         updateContext // unchanged
 
 
@@ -117,7 +117,7 @@ module TranslateNode =
                            with Transform = renderContext.Transform.Multiply (renderContext.Window.TranslationTransform node.X node.Y)}
         let afterContext = RenderNode.renderChildren newContext node
         { renderContext with AppData = afterContext.AppData }
-    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+    let update (updateContext: UpdateContext<'N, 'A>) (node:TranslateNode<'N>) =
         updateContext // unchanged
 
 ////// APPLICATION CODE
@@ -145,7 +145,7 @@ module Application =
             // TBD stuff here
             RenderNode.renderChildren renderContext node 
     
-        let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+        let update (updateContext: UpdateContext<'N, 'A>) (node:PlayerNode<'N>) =
              // TBD stuff here
              updateContext // unchanged
     type EnemyNode<'N> = { Name: string ;  HP: int; Children: 'N list }
@@ -158,7 +158,7 @@ module Application =
             // TBD stuff here
             RenderNode.renderChildren renderContext node
 
-        let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+        let update (updateContext: UpdateContext<'N, 'A>) (node:EnemyNode<'N>) =
              // TBD stuff here
              updateContext // unchanged
         
