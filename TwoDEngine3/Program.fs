@@ -9,12 +9,43 @@ open GraphicsManagerSFML
 open TDE3ManagerInterfaces.InputDevices
 open TDE3ManagerInterfaces.GraphicsManagerInterface
 open TDE3ManagerInterfaces
+open TDE3ManagerInterfaces.MouseAndKeyboardManager
 open TDE3ManagerInterfaces.TextRendererInterfaces
 open System.Drawing
 open TDE3ManagerInterfaces.WorldTree
 type SysColor = System.Drawing.Color
 
 (*   Asteriods test program by JPK *)
+
+module Key =
+     let Left = 2190
+     let Right = 2192
+
+type KBRotateNode<'N> = { Degrees:float32 ; Children: 'N list }
+
+let TryGetManager<'a> () =
+    match ManagerRegistry.getManager<'a> () with
+    | Some manager -> manager
+    | None -> failwith "Manager not found"
+module KBRotateNode =
+    let create (degrees:float32) (children:'N list) = { Degrees = degrees ; Children = children }
+    
+    let render (renderContext: RenderContext<'N, 'A>) (node:RotateNode<'N>) =
+        let newContext = { renderContext with Transform = renderContext.Transform.Multiply (renderContext.Window.RotationTransform node.Degrees) }
+        let afterContext = RenderNode.renderChildren newContext node
+        { renderContext with AppData = afterContext.AppData }
+    let update (updateContext: UpdateContext<'N, 'A>) (node:RotateNode<'N>) =
+        let mgr = TryGetManager<MouseAndKeyboardManager>()
+        deviceStates |> Seq.iter (fun state -> //TODO needs to be a fols to collect all key actions
+            match state with
+            | KeyboardState down  ->
+                down |> Seq.iter (fun key ->
+                    match key with
+                    | Key.Left -> { updateContext with NewTree = Some { node with Degrees = node.Degrees - 1.0f } }
+                    | Key.Right -> { updateContext with NewTree = Some { node with Degrees = node.Degrees + 1.0f } }
+                    | _ -> updateContext // unchanged
+            | _ -> updateContext // unchanged
+        ) 
 
 type AppRenderContext = { MyAppData: string }
 let TryGetManager<'a> () =
