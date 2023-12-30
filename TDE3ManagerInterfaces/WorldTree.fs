@@ -1,4 +1,5 @@
 ﻿module TDE3ManagerInterfaces.WorldTree
+
 open System
 open TDE3ManagerInterfaces.GraphicsManagerInterface
 
@@ -38,8 +39,7 @@ module RenderNode =
 
     let inline renderChildren<'N, 'A, 'SN when 'SN : (member Children : 'N list)>
         (renderContext: WorldContext<'N, 'A>) (specificNode: 'SN) =
-        
-        specificNode.Children |> List.fold renderContext.RenderDispatch renderContext
+            specificNode.Children |> List.fold renderContext.RenderDispatch renderContext
 
 
 
@@ -50,7 +50,8 @@ type CollectionNode<'N> = { Children: 'N list }
 module CollectionNode =
     let create (children:'N list) = { Children = children }
     
-    let render (renderContext: WorldContext<'N, 'A>) (collectionNode:CollectionNode<'N>) = RenderNode.renderChildren renderContext collectionNode
+    let render (renderContext: WorldContext<'N, 'A>) (collectionNode:CollectionNode<'N>) =
+        RenderNode.renderChildren renderContext collectionNode
     
     
 
@@ -132,14 +133,10 @@ module Application =
         
         let render (renderContext: WorldContext<'N, 'A>) (node:PlayerNode<'N>) =
             // TBD stuff here
-            RenderNode.renderChildren renderContext node
-            
-            
-            
+            RenderNode.renderChildren renderContext node 
+    
     type EnemyNode<'N> = { Name: string ;  HP: int; Children: 'N list }
 
-    
-    
     module EnemyNode =
         let create (name: string) (hp: int) (children:'N list) = { Name = name ; HP = hp ; Children = children }
         
