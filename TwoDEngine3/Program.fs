@@ -77,9 +77,7 @@ let main argv =
                 Size(25, 30)
             )
          )
-    
-   
-   
+        
     window.Start(fun window ->
         let mutable worldTree = 
                  Translate(TranslateNode.create 400.0f 300.0f [
@@ -93,13 +91,18 @@ let main argv =
            
         let updateContext:UpdateContext<'N, 'A> =
             { UpdateDispatch = updateDispatch; AppData={MyAppData="Hello World"};
-              NewTree = None}     
+              DeltaMS=0u; LastTime = DateTime.Now;NewTree = None}     
                
         while window.IsOpen() do
             window.Clear Color.Black
             renderDispatch renderContext worldTree |> ignore
             window.Show()
-            updateDispatch updateContext worldTree
+            let now = DateTime.Now
+            updateDispatch
+                {updateContext with
+                    DeltaMS = (now-updateContext.LastTime).Milliseconds |> uint32;
+                    LastTime = now}
+                worldTree
             |> function
                 | {NewTree = Some newTree} -> worldTree <- newTree
                 | _ -> ()

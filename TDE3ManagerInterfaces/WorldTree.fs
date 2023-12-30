@@ -33,7 +33,11 @@ type RenderContext<'N, 'A> =
 and RenderDispatch<'N, 'A> = RenderContext<'N, 'A> -> 'N -> RenderContext<'N, 'A>
 
 type UpdateContext<'N, 'A> =
-    { UpdateDispatch: UpdateDispatch<'N, 'A> ; NewTree:'N option; AppData: 'A }
+    { UpdateDispatch: UpdateDispatch<'N, 'A>
+      LastTime:DateTime
+      DeltaMS: uint32
+      NewTree:'N option
+      AppData: 'A }
 and UpdateDispatch<'N, 'A> = UpdateContext<'N, 'A> -> 'N -> UpdateContext<'N, 'A>
 
 // 'SN is used to constrain the type of the children of the node
