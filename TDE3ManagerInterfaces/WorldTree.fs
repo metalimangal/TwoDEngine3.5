@@ -5,6 +5,8 @@ open TDE3ManagerInterfaces.GraphicsManagerInterface
 
 
 ////// WORLD TREE CODE
+/// This is based on sample code written by Justin Wick and used
+/// with his permission. It is licensed under the MIT license
 
 /// Big picture:
 ///
