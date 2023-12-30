@@ -28,21 +28,24 @@ open TDE3ManagerInterfaces.GraphicsManagerInterface
 /// Overall, the app is "in charge" of driving the big picture stuff, the engine just provides the pieces and a coherent
 /// convention.
 
-type WorldContext<'N, 'A> =
-    { Window:Window ; Transform: Transform ; RenderDispatch: RenderDispatch<'N, 'A> ; AppData: 'A }
-    
-    
-    
-and RenderDispatch<'N, 'A> = WorldContext<'N, 'A> -> 'N -> WorldContext<'N, 'A>
+type RenderContext<'N, 'A> =
+    { Window:Window ; Transform: Transform ; RenderDispatch: RenderDispatch<'N, 'A> ; AppData: 'A }   
+and RenderDispatch<'N, 'A> = RenderContext<'N, 'A> -> 'N -> RenderContext<'N, 'A>
+
+type UpdateContext<'N, 'A> =
+    { UpdateDispatch: UpdateDispatch<'N, 'A> ; NewTree:'N; AppData: 'A }
+and UpdateDispatch<'N, 'A> = UpdateContext<'N, 'A> -> 'N -> UpdateContext<'N, 'A>
 
 // 'SN is used to constrain the type of the children of the node
 
 module RenderNode =
 
     let inline renderChildren<'N, 'A, 'SN when 'SN : (member Children : 'N list)>
-        (renderContext: WorldContext<'N, 'A>) (specificNode: 'SN) =
+        (renderContext: RenderContext<'N, 'A>) (specificNode: 'SN) =
             specificNode.Children |> List.fold renderContext.RenderDispatch renderContext
-
+    let inline updateChildren<'N, 'A, 'SN when 'SN : (member Children : 'N list)>
+        (updateContext: UpdateContext<'N, 'A>) (specificNode: 'SN) =
+            specificNode.Children |> List.fold updateContext.UpdateDispatch updateContext
 
 
 type CollectionNode<'N> = { Children: 'N list }
@@ -52,10 +55,11 @@ type CollectionNode<'N> = { Children: 'N list }
 module CollectionNode =
     let create (children:'N list) = { Children = children }
     
-    let render (renderContext: WorldContext<'N, 'A>) (collectionNode:CollectionNode<'N>) =
+    let render (renderContext: RenderContext<'N, 'A>) (collectionNode:CollectionNode<'N>) =
         RenderNode.renderChildren renderContext collectionNode
     
-    
+    let update (updateContext: UpdateContext<'N, 'A>) (collectionNode:CollectionNode<'N>) =
+        RenderNode.updateChildren updateContext collectionNode
 
 type SpriteNode<'N> = { Image:Image ; Children: 'N list }
 
@@ -64,9 +68,11 @@ type SpriteNode<'N> = { Image:Image ; Children: 'N list }
 module SpriteNode =
     let create (img:Image) (children:'N list) = { Image = img ; Children = children }
     
-    let render  (renderContext: WorldContext<'N, 'A>) (node:SpriteNode<'N>)=
+    let render  (renderContext: RenderContext<'N, 'A>) (node:SpriteNode<'N>)=
         renderContext.Window.DrawImage renderContext.Transform  node.Image
         renderContext //unchanged
+    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+        updateContext // unchanged
 
 
 
@@ -77,11 +83,12 @@ type GenericTransformNode<'N> = { Transform:Transform ; Children: 'N list }
 module GenericTransformNode =
     let create (transform:Transform) (children:'N list) = { Transform = transform ; Children = children }
     
-    let render (renderContext: WorldContext<'N, 'A>) (node:GenericTransformNode<'N>) =
+    let render (renderContext: RenderContext<'N, 'A>) (node:GenericTransformNode<'N>) =
         let newContext = { renderContext with Transform = renderContext.Transform.Multiply node.Transform }
         let afterContext = RenderNode.renderChildren newContext node
         { renderContext with AppData = afterContext.AppData }
-
+    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+        updateContext // unchanged
 
 type RotateNode<'N> = { Degrees:float32 ; Children: 'N list }
 
@@ -90,11 +97,12 @@ type RotateNode<'N> = { Degrees:float32 ; Children: 'N list }
 module RotateNode =
     let create (degrees:float32) (children:'N list) = { Degrees = degrees ; Children = children }
     
-    let render (renderContext: WorldContext<'N, 'A>) (node:RotateNode<'N>) =
+    let render (renderContext: RenderContext<'N, 'A>) (node:RotateNode<'N>) =
         let newContext = { renderContext with Transform = renderContext.Transform.Multiply (renderContext.Window.RotationTransform node.Degrees) }
         let afterContext = RenderNode.renderChildren newContext node
         { renderContext with AppData = afterContext.AppData }
-
+    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+        updateContext // unchanged
 
 
 type TranslateNode<'N> = { X:float32 ; Y:float32 ; Children: 'N list }
@@ -104,13 +112,13 @@ type TranslateNode<'N> = { X:float32 ; Y:float32 ; Children: 'N list }
 module TranslateNode =
     let create (x:float32) (y:float32) (children:'N list) = { X = x ; Y = y ; Children = children }
     
-    let render (renderContext: WorldContext<'N, 'A>) (node:TranslateNode<'N>) =
+    let render (renderContext: RenderContext<'N, 'A>) (node:TranslateNode<'N>) =
         let newContext = { renderContext
                            with Transform = renderContext.Transform.Multiply (renderContext.Window.TranslationTransform node.X node.Y)}
         let afterContext = RenderNode.renderChildren newContext node
         { renderContext with AppData = afterContext.AppData }
-    
-    
+    let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+        updateContext // unchanged
 
 ////// APPLICATION CODE
 ///
@@ -133,20 +141,26 @@ module Application =
     module PlayerNode =
         let create (name: string) (hp: int) (children:'N list) = { Name = name ; HP = hp ; Children = children }
         
-        let render (renderContext: WorldContext<'N, 'A>) (node:PlayerNode<'N>) =
+        let render (renderContext: RenderContext<'N, 'A>) (node:PlayerNode<'N>) =
             // TBD stuff here
             RenderNode.renderChildren renderContext node 
     
+        let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+             // TBD stuff here
+             updateContext // unchanged
     type EnemyNode<'N> = { Name: string ;  HP: int; Children: 'N list }
+            
 
     module EnemyNode =
         let create (name: string) (hp: int) (children:'N list) = { Name = name ; HP = hp ; Children = children }
         
-        let render (renderContext: WorldContext<'N, 'A>) (node:EnemyNode<'N>) =
+        let render (renderContext: RenderContext<'N, 'A>) (node:EnemyNode<'N>) =
             // TBD stuff here
             RenderNode.renderChildren renderContext node
 
-        
+        let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+             // TBD stuff here
+             updateContext // unchanged
         
     type RenderNode =
         // Engine nodes
@@ -161,7 +175,7 @@ module Application =
         
 
     
-    let render (node:RenderNode) (rc: WorldContext<RenderNode, AppRenderContext>) =
+    let render (node:RenderNode) (rc: RenderContext<RenderNode, AppRenderContext>) =
         match node with
         | Collection c -> c |> CollectionNode.render rc
         | Sprite s -> s |> SpriteNode.render rc
@@ -188,7 +202,9 @@ module Application =
     
         let createRendering (what: string) = create $"Rendering: %s{what}"
     
-    
+        let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+             // TBD stuff here
+             updateContext // unchanged
     
     type DebugAppRenderContext = { AppRenderContext: AppRenderContext ; DebugData: string ; DebugEvents: string list }
     
@@ -202,15 +218,17 @@ module Application =
         let addEvent (event: DebugEvent) (debugAppRenderContext: DebugAppRenderContext) =
             { debugAppRenderContext with DebugEvents = event.EventData :: debugAppRenderContext.DebugEvents }
         
-        
+        let update (updateContext: UpdateContext<'N, 'A>) (node:SpriteNode<'N>) =
+             // TBD stuff here
+             updateContext // unchanged
     
     module RenderContext =
-        let addDebugEvent (event: DebugEvent) (renderContext: WorldContext<RenderNode, DebugAppRenderContext>) =
+        let addDebugEvent (event: DebugEvent) (renderContext: RenderContext<RenderNode, DebugAppRenderContext>) =
             { renderContext with AppData = renderContext.AppData |> DebugAppRenderContext.addEvent event }
     
     
     
-    let renderDebug (node:RenderNode) (rc: WorldContext<RenderNode, DebugAppRenderContext>) =
+    let renderDebug (node:RenderNode) (rc: RenderContext<RenderNode, DebugAppRenderContext>) =
         match node with
         | Collection c ->
             let newContext = ("Collection" |> DebugEvent.createRendering , rc) ||> RenderContext.addDebugEvent

@@ -30,8 +30,8 @@ type RenderNode =
         | Translate of TranslateNode<RenderNode>
         // App nodes
         
-let renderDispatch  (rc: WorldContext<RenderNode, AppRenderContext>)(node:RenderNode) :
-    WorldContext<RenderNode, AppRenderContext> =
+let renderDispatch  (rc: RenderContext<RenderNode, AppRenderContext>)(node:RenderNode) :
+    RenderContext<RenderNode, AppRenderContext> =
         match node with
         | Collection c -> c |> CollectionNode.render rc
         | Sprite s -> s |> SpriteNode.render rc
@@ -79,7 +79,7 @@ let main argv =
                  ])
              
             
-        let worldContext:WorldContext<'N, 'A> =
+        let worldContext:RenderContext<'N, 'A> =
             { Window=window; Transform=window.IdentityTransform;
               RenderDispatch = renderDispatch; AppData={MyAppData="Hello World"}}
            
