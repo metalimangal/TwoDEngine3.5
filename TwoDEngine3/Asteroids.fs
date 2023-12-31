@@ -37,6 +37,13 @@ let NewtonianUpdate  deltaMS (obj:NewtonianObject)  =
     let y = obj.y + obj.vy * (float32 deltaMS)
     let r = obj.r + obj.vr * (float32 deltaMS)
     {obj with x=x;y=y;r=r}
+    
+let Wrap (w:float32) (h:float32) (obj:NewtonianObject) =
+    let x = if obj.x+obj.img.Size.X< 0.0f then w
+                else if obj.x > w then 0.0f-obj.img.Size.X else obj.x
+    let y = if obj.y+obj.img.Size.Y < 0.0f then h
+                else if obj.y > h then 0.0f-obj.img.Size.Y else obj.y
+    {obj with x=x;y=y}
 
 let TryGetManager<'a> () =
     let manager = ManagerRegistry.getManager<'a>()
@@ -139,16 +146,26 @@ let Start() =
                              else 0.0f
             
                 ship <- {ship with vr=shipRV;vx=shipXV;vy=shipYV}
-                NewtonianUpdate deltaMS ship |> fun x -> ship <- x
-                asteroids <- List.map (NewtonianUpdate deltaMS) asteroids
+                NewtonianUpdate deltaMS ship 
+                |> Wrap 800.0f 600.0f |> fun x -> ship <- x
+                asteroids <- List.map (fun rock ->
+                    NewtonianUpdate deltaMS rock |> Wrap 800f 600f) asteroids
                 let shipXform = (window.TranslationTransform ship.x ship.y).Multiply
                                  (window.RotationTransform ship.r)
                 window.Clear (SysColor.Black)
                 window.DrawImage shipXform  ship.img           // for asteroid in asteroids do
                 asteroids
                 |>Seq.iter(fun asteroid ->
-                    let xform = (window.TranslationTransform asteroid.x asteroid.y).Multiply
-                                 (window.RotationTransform asteroid.r)
+                    let xform = (window.TranslationTransform asteroid.x asteroid.y)
+                                |> fun x -> x.Multiply
+                                                (window.TranslationTransform
+                                                        (asteroid.img.Size.X /2f)
+                                                        (asteroid.img.Size.Y /2f)) 
+                                |> fun x -> x.Multiply (window.RotationTransform asteroid.r)
+                                |> fun x -> x.Multiply
+                                                (window.TranslationTransform
+                                                        (-asteroid.img.Size.X /2f)
+                                                        (-asteroid.img.Size.Y /2f)) 
                     window.DrawImage xform asteroid.img )
                 let fpsStr = "fps: "+ (1000.0f/float32 deltaMS).ToString()
                 font.MakeText fpsStr

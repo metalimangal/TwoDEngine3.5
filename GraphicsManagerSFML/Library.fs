@@ -84,7 +84,7 @@ and WindowSFML(sfmlWindow:SFWindow,gm:GraphicsManager) =
         override this.Clear(color) =
             sfmlWindow.Clear (SFColor(color.R,color.G,color.B,color.A))
             ()
-        override this.Close() = failwith "todo"
+        override this.Close() = sfmlWindow.Close()
         override this.Show() = sfmlWindow.Display()
         override this.IsOpen() = sfmlWindow.IsOpen
             
