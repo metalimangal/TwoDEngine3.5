@@ -22,10 +22,12 @@ let RandomFloat (low:float) (high:float) =
    Random.NextDouble() * (high - low) + low
 
 module Key =
-     let Left = 2190
-     let Up = 2191
-     let Right = 2192
-     let Down = 2193
+     let Left = 37
+     let Up = 38
+     let Right = 39
+     let Down = 40
+     let ESC = 27
+     let SPACE = 32
 
 type NewtonianObject = {x:float32; y:float32;r:float32;
                         vx:float32;vy:float32;vr:float32;
@@ -41,8 +43,31 @@ let TryGetManager<'a> () =
     match manager with
     | Some m -> m
     | None -> failwith "Manager not found"
+    
+let DegToRad (deg:float32) = deg * (float32 Math.PI) / 180.0f
 
-
+let IsKeyDown(asciicode:int) =
+    let inputDeviceManager = TryGetManager<InputDeviceInterface> ()
+    inputDeviceManager.PollState()
+    |> Map.values
+    |> Seq.fold (fun acc axisState ->
+        if acc = true then
+            acc
+        else
+            match axisState with
+            | KeyboardState kbdState ->
+                // debug code
+                //printfn "Keystate: %A\n" kbdState
+                //kbdState |> Seq.map(fun onechar ->
+                //                        int32 onechar)
+                //|> printfn "Keycodes: %A\n" 
+                kbdState
+                |> List.tryFind (fun keyState -> int keyState = asciicode)
+                |> function
+                    | Some x -> true
+                    | None -> false
+             | _ -> false
+        ) false
 let Start() =
     // Thes registrations will eventually be automatic runtims plugins
      //Register GraphicsManager
@@ -96,14 +121,30 @@ let Start() =
         let font =  textRenderer.LoadFont window "Assets/Basic.fnt"
         
 
-        while window.IsOpen() do
+        while window.IsOpen() && not (IsKeyDown Key.ESC) do
             let currentTime = DateTime.Now
             let deltaMS = (currentTime - lastTime).Milliseconds
             if deltaMS >0 then
+                let shipRV = if IsKeyDown Key.Left then -0.1f
+                             elif IsKeyDown Key.Right then 0.1f
+                             else 0.0f
+                let shipXV = if IsKeyDown Key.SPACE then
+                                ship.r
+                                |> DegToRad |> sin |> fun xv -> xv*0.1f |>float32
+                             else 0.0f
+                             
+                let shipYV = if IsKeyDown Key.SPACE then
+                                ship.r
+                                |> DegToRad |> cos |> fun yv -> yv* -0.1f |>float32
+                             else 0.0f
+            
+                ship <- {ship with vr=shipRV;vx=shipXV;vy=shipYV}
                 NewtonianUpdate deltaMS ship |> fun x -> ship <- x
                 asteroids <- List.map (NewtonianUpdate deltaMS) asteroids
+                let shipXform = (window.TranslationTransform ship.x ship.y).Multiply
+                                 (window.RotationTransform ship.r)
                 window.Clear (SysColor.Black)
-                window.DrawImage (window.TranslationTransform ship.x ship.y) ship.img           // for asteroid in asteroids do
+                window.DrawImage shipXform  ship.img           // for asteroid in asteroids do
                 asteroids
                 |>Seq.iter(fun asteroid ->
                     let xform = (window.TranslationTransform asteroid.x asteroid.y).Multiply
@@ -114,6 +155,7 @@ let Start() =
                 |> fun x -> x.Draw window window.IdentityTransform
                 window.Show()
                 lastTime <- currentTime
+        window.Close()
         ()
             
     window.Start(logic)

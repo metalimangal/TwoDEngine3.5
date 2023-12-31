@@ -45,3 +45,4 @@ type InputDeviceInterface =
     // The second map is removed nodes
     // The third map is nodes whose value has changed
     abstract PollState: unit -> Map<string,AxisState>
+    

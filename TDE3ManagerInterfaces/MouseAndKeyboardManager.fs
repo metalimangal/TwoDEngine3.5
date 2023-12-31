@@ -10,3 +10,6 @@ type MouseAndKeyboardManager =
         // The second map is removed nodes
         // The third map is nodes whose value has changed
         abstract StateChanges : (Map<string,Node> * Map<string,Node> * Map<string,Node>)
+        abstract Update : unit -> unit
+        
+    abstract IsKeyDown: int32 -> bool    
