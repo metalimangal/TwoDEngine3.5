@@ -8,13 +8,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Program.fs" />
         <Content Include="Assets\football_small.png">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="Assets\asteroids-arcade.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="Assets\Basic.fnt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Assets\Basic_0.tga">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Compile Include="Asteroids.fs" />
+        <Compile Include="AsteroidsSG.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
