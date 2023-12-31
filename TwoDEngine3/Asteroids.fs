@@ -23,13 +23,18 @@ let RandomFloat (low:float) (high:float) =
 
 module Key =
      let Left = 2190
+     let Up = 2191
      let Right = 2192
+     let Down = 2193
 
-type NewtonianObject = {x:float32; y:float32;vx:float32;vy:float32;img:Image}
+type NewtonianObject = {x:float32; y:float32;r:float32;
+                        vx:float32;vy:float32;vr:float32;
+                        img:Image}
 let NewtonianUpdate  deltaMS (obj:NewtonianObject)  =
     let x = obj.x + obj.vx * (float32 deltaMS)
     let y = obj.y + obj.vy * (float32 deltaMS)
-    {obj with x=x;y=y}
+    let r = obj.r + obj.vr * (float32 deltaMS)
+    {obj with x=x;y=y;r=r}
 
 let TryGetManager<'a> () =
     let manager = ManagerRegistry.getManager<'a>()
@@ -73,12 +78,17 @@ let Start() =
             )
          )
     let logic (window:Window) =
-        let mutable ship = {x=400.0f;y=300.0f;vx=0.0f;vy=0.0f;img=shipImage}
+        let mutable ship = {
+            x=400.0f;y=300.0f;r=0f
+            vx=0.0f;vy=0.0f;vr=0f;img=shipImage
+        }
         let mutable asteroids = [for i in 1..10 -> {
-                                    x=float32(Random.Next(0,800));
-                                    y=float32(Random.Next(0,600));
+                                    x=float32(Random.Next(0,800))
+                                    y=float32(Random.Next(0,600))
+                                    r=float32(Random.Next(0,359))
                                     vx=float32(RandomFloat -0.05 0.05)
                                     vy=float32(RandomFloat -0.05 0.05)
+                                    vr=float32(RandomFloat -0.1 0.1)
                                     img=bigAsteroid } ]
         let mutable bullets = []
         let mutable lastTime = DateTime.Now
@@ -96,7 +106,9 @@ let Start() =
                 window.DrawImage (window.TranslationTransform ship.x ship.y) ship.img           // for asteroid in asteroids do
                 asteroids
                 |>Seq.iter(fun asteroid ->
-                    window.DrawImage (window.TranslationTransform asteroid.x asteroid.y) asteroid.img )
+                    let xform = (window.TranslationTransform asteroid.x asteroid.y).Multiply
+                                 (window.RotationTransform asteroid.r)
+                    window.DrawImage xform asteroid.img )
                 let fpsStr = "fps: "+ (1000.0f/float32 deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
