@@ -12,7 +12,8 @@ type CollisionRectangle =
 type CollisionResult =
     { Collided : bool;
       CollisionPoint : Vector2;
-      CollisionNormal : Vector2; }
+      CollisionNormal : Vector2
+      CollisionPenetration : float32 }
 type CollisionGeometry =
     | Circle of CollisionCircle
     | Rectangle of CollisionRectangle
