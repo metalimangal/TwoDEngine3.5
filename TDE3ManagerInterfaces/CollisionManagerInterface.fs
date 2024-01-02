@@ -15,8 +15,8 @@ type CollisionResult =
       CollisionNormal : Vector2
       CollisionPenetration : float32 }
 type CollisionGeometry =
-    | Circle of CollisionCircle
-    | Rectangle of CollisionRectangle
+    | CircleCollider of CollisionCircle
+    | RectangleCollider of CollisionRectangle
     
 [<AbstractClass>]    
 type CollisionManager =

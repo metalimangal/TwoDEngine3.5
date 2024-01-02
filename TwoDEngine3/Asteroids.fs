@@ -6,6 +6,7 @@ open System.Runtime.InteropServices.JavaScript
 open AngelCodeTextRenderer
 open InputManagerWinRawInput
 open GraphicsManagerSFML
+open TDE3ManagerInterfaces.CollisionManagerInterface
 open TDE3ManagerInterfaces.InputDevices
 open TDE3ManagerInterfaces.GraphicsManagerInterface
 open TDE3ManagerInterfaces
@@ -86,11 +87,15 @@ let Start() =
      //register InputManager
     typedefof<InputManagerWinRawInput>
     |> ManagerRegistry.addManager
+    //register CollisionManager
+    typedefof<CollisionManager>
+    |> ManagerRegistry.addManager
     
     let graphics = TryGetManager<GraphicsManager> ()
     let textRenderer = TryGetManager<TextManager> ()
     let inputDeviceManager = TryGetManager<InputDeviceInterface> ()
     let window = graphics.OpenWindow (Windowed (800u,600u)) "Asteroids"
+    let collision = TryGetManager<CollisionManager> ()
     
     let atlas = 
         File.Open("Assets/asteroids-arcade.png", FileMode.Open)
@@ -167,11 +172,26 @@ let Start() =
                                                         (-asteroid.img.Size.X /2f)
                                                         (-asteroid.img.Size.Y /2f)) 
                     window.DrawImage xform asteroid.img )
+                
+                let shipCicle:CollisionGeometry =
+                    CircleCollider{Center=Vector2(ship.x,ship.y);Radius=ship.img.Size.Y/2f}
+                asteroids
+                |> List.tryFind (fun asteroid ->
+                    CircleCollider{Center=Vector2(asteroid.x,asteroid.y);Radius=asteroid.img.Size.Y/2f}
+                    |> fun x -> collision.Collide shipCicle x
+                    |> function
+                        | Some result -> true
+                        | _ -> false
+                    )
+                |> function
+                    | Some x -> printfn "Collision detected"
+                    | None -> ()   
+                
                 let fpsStr = "fps: "+ (1000.0f/float32 deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
                 window.Show()
-                lastTime <- currentTime
+                lastTime <- currentTime 
         window.Close()
         ()
             
