@@ -2,18 +2,16 @@
 open System
 open System.Numerics
 open System.IO
-open System.Runtime.InteropServices.JavaScript
 open AngelCodeTextRenderer
 open InputManagerWinRawInput
 open GraphicsManagerSFML
+open SimpleCollisionManager
 open TDE3ManagerInterfaces.CollisionManagerInterface
 open TDE3ManagerInterfaces.InputDevices
 open TDE3ManagerInterfaces.GraphicsManagerInterface
-open TDE3ManagerInterfaces
-open TDE3ManagerInterfaces.MouseAndKeyboardManager
 open TDE3ManagerInterfaces.TextRendererInterfaces
 open System.Drawing
-open TDE3ManagerInterfaces.WorldTree
+
 type SysColor = System.Drawing.Color
 
 (*   Asteriods test program by JPK *)
@@ -88,7 +86,7 @@ let Start() =
     typedefof<InputManagerWinRawInput>
     |> ManagerRegistry.addManager
     //register CollisionManager
-    typedefof<CollisionManager>
+    typedefof<SimpleCollisionManager>
     |> ManagerRegistry.addManager
     
     let graphics = TryGetManager<GraphicsManager> ()

@@ -34,6 +34,7 @@
         <ProjectReference Include="..\AngelCodeTextRenderer\AngelCodeTextRenderer.fsproj" />
         <ProjectReference Include="..\GraphicsManagerSFML\GraphicsManagerSFML.fsproj" />
         <ProjectReference Include="..\InputManagerWinRawInput\InputManagerWinRawInput.fsproj" />
+        <ProjectReference Include="..\SimpleCollisionManager\SimpleCollisionManager.fsproj" />
     </ItemGroup>
 
 </Project>

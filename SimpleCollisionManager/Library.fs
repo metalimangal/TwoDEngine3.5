@@ -3,8 +3,8 @@
 open System.Numerics
 open TDE3ManagerInterfaces.CollisionManagerInterface
 
-type SimpleCollisionManager =
-    inherit CollisionManager
+type SimpleCollisionManager() =
+    interface CollisionManager with
         override this.Collide  (collider1:CollisionGeometry) (collider2:CollisionGeometry) : CollisionResult option =
             match collider1 with
             | CircleCollider c ->

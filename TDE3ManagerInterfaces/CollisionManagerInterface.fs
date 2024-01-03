@@ -18,6 +18,6 @@ type CollisionGeometry =
     | CircleCollider of CollisionCircle
     | RectangleCollider of CollisionRectangle
     
-[<AbstractClass>]    
+  
 type CollisionManager =
     abstract Collide : CollisionGeometry -> CollisionGeometry -> CollisionResult option
