@@ -20,6 +20,7 @@
         <Content Include="Assets\Basic_0.tga">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Compile Include="AnimatedImage.fs" />
         <Compile Include="Asteroids.fs" />
         <Compile Include="AsteroidsSG.fs" />
         <Compile Include="Program.fs" />

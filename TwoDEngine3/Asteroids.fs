@@ -104,7 +104,13 @@ let Start() =
                 Point(3, 2),
                 Size(25, 30)
             )
-         ) 
+         )
+    let explosionSheet = atlas.SubImage (
+            Rectangle(
+                Point(75, 142),
+                Size(180, 36)
+            )
+         )    
     let bigAsteroid =
         atlas.SubImage (
             Rectangle(
