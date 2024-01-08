@@ -5,7 +5,7 @@ open TDE3ManagerInterfaces.GraphicsManagerInterface
 
 
 type AnimatedImage = { 
-    ImageStrip : Image
+    ImageList : List<Image>
     FrameWidth : int
     FrameHeight : int
     FrameCount : int
@@ -17,13 +17,28 @@ type AnimatedImage = {
 }
 
 module AnimatedImage =
+    let creatSubImageList (image:Image) (frameWidth:int) (frameHeight:int) =
+        let cols= int (image.Size.X/float32 frameWidth)
+        let rows = int (image.Size.Y/float32 frameHeight)
+        
+        [|0..rows|]
+        |> Array.fold (fun (acc:Image list) row ->
+            [|0..cols|]
+            |> Array.fold (fun (acc:Image list) col ->
+                let frameX = col * frameWidth
+                let frameY = row * frameHeight
+                let frameRect = Rectangle(frameX, frameY, frameWidth, frameHeight)
+                let subimage = image.SubImage frameRect
+                subimage::acc
+            ) acc
+        ) List.empty
     let createFromFrameWidth (imageStrip:Image) frameWidth frameHeight frameRate loop =
         let width= imageStrip.Size.X/float32 frameWidth
         let height = imageStrip.Size.Y/float32 frameHeight
         {       
-            ImageStrip = imageStrip
             FrameWidth = frameWidth
             FrameHeight = frameHeight
+            ImageList = creatSubImageList imageStrip (int frameWidth) (int frameHeight)
             FrameCount = int(width*height)
             FrameRate = frameRate
             FrameIndexAndTimer = (0,float 0.0f)
@@ -34,10 +49,10 @@ module AnimatedImage =
     let createFromFrameCounts (imageStrip:Image) frameCountX frameCountY frameRate loop =
         let width= imageStrip.Size.X/float32 frameCountX
         let height = imageStrip.Size.Y/float32 frameCountY
-        {       
-            ImageStrip = imageStrip
+        {      
             FrameWidth = int width
             FrameHeight = int height
+            ImageList = creatSubImageList imageStrip (int width) (int height)
             FrameCount = frameCountX * frameCountY
             FrameRate = frameRate
             FrameIndexAndTimer = (0, float 0.0f)
@@ -47,11 +62,7 @@ module AnimatedImage =
         }
         
     let draw (image:AnimatedImage) (window:Window) (xform:Transform)=
-        let frameX = (fst image.FrameIndexAndTimer % (int image.ImageStrip.Size.X/image.FrameWidth)) * image.FrameWidth
-        let frameY = (fst image.FrameIndexAndTimer / (int image.ImageStrip.Size.Y/image.FrameHeight)) * image.FrameHeight
-        let frameRect = Rectangle(frameX, frameY, image.FrameWidth, image.FrameHeight)
-        let subimage = image.ImageStrip.SubImage frameRect
-        window.DrawImage xform subimage
+        window.DrawImage xform image.ImageList.[fst image.FrameIndexAndTimer]
     
     let update (deltaTime:uint32) (image:AnimatedImage) : AnimatedImage =
         if image.Playing then
