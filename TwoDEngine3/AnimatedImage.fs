@@ -21,11 +21,11 @@ module AnimatedImage =
         let cols= int (image.Size.X/float32 frameWidth)
         let rows = int (image.Size.Y/float32 frameHeight)
         
-        [|0..rows|]
+        [|0..rows-1|]
         |> Array.fold (fun (acc:Image list) row ->
-            [|0..cols|]
+            [|0..cols-1|]
             |> Array.fold (fun (acc:Image list) col ->
-                let frameX = col * frameWidth
+                let frameX = (col * frameWidth) 
                 let frameY = row * frameHeight
                 let frameRect = Rectangle(frameX, frameY, frameWidth, frameHeight)
                 let subimage = image.SubImage frameRect

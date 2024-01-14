@@ -37,13 +37,13 @@ type ImageSFML(tex:SFTexture,rect) =
             Vector2i(int(tex.Size.X),int(tex.Size.Y))))
     interface Image with
         member this.Size =
-            let size = this.sprite.TextureRect
+            let size = this.sprite
             Vector2(float32(this.sprite.TextureRect.Width),
                        float32(this.sprite.TextureRect.Height))
-        member this.SubImage(rect:Rectangle) =
+        member this.SubImage(newrect:Rectangle) =
             ImageSFML(tex,IntRect(
-                Vector2i(int(rect.X),int(rect.Y)),
-                Vector2i(int(rect.Width),int(rect.Height))))
+                Vector2i(int(newrect.X+rect.Left),int(newrect.Y+rect.Top)),
+                Vector2i(int(newrect.Width),int(newrect.Height))))
              
 
        

@@ -3,6 +3,7 @@ open System
 open System.Numerics
 open System.IO
 open AngelCodeTextRenderer
+open ImageExtensions
 open InputManagerWinRawInput
 open GraphicsManagerSFML
 open SimpleCollisionManager
@@ -107,8 +108,8 @@ let Start() =
          )
     let explosionSheet = atlas.SubImage (
             Rectangle(
-                Point(75, 142),
-                Size(180, 36)
+                Point(69, 142),
+                Size(108, 36)
             )
          )    
     let bigAsteroid =
@@ -132,6 +133,7 @@ let Start() =
                                     vr=float32(RandomFloat -0.1 0.1)
                                     img=bigAsteroid } ]
         let mutable bullets = []
+        let mutable explosion = AnimatedImage.createFromFrameCounts explosionSheet 3 1 (float 0.1f) true
         let mutable lastTime = DateTime.Now
         let mutable lastBulletTime = DateTime.Now
         let font =  textRenderer.LoadFont window "Assets/Basic.fnt"
@@ -188,14 +190,16 @@ let Start() =
                         | _ -> false
                     )
                 |> function
-                    | Some x -> printfn "Collision detected"
-                    | None -> ()   
-                
+                    | Some x -> () //printfn "Collision detected"
+                    | None -> ()
+                //window.DrawImage (window.TranslationTransform 100.0f 100.0f) explosionSheet
+                AnimatedImage.draw explosion window (window.TranslationTransform 100.0f 100.0f)
+                //explosion <- AnimatedImage.update (uint32 deltaMS) explosion
                 let fpsStr = "fps: "+ (1000.0f/float32 deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
                 window.Show()
-                lastTime <- currentTime 
+                lastTime <- currentTime
         window.Close()
         ()
             
