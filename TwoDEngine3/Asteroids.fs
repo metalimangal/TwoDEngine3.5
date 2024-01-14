@@ -108,15 +108,15 @@ let Start() =
          )
     let explosionSheet = atlas.SubImage (
             Rectangle(
-                Point(69, 142),
-                Size(108, 36)
+                Point(51, 142),
+                Size(204, 36)
             )
          )    
     let bigAsteroid =
         atlas.SubImage (
             Rectangle(
-                Point(62, 186),
-                Size(60, 62)
+                Point(51, 186),
+                Size(68, 204)
             )
          )
     let logic (window:Window) =
@@ -133,7 +133,7 @@ let Start() =
                                     vr=float32(RandomFloat -0.1 0.1)
                                     img=bigAsteroid } ]
         let mutable bullets = []
-        let mutable explosion = AnimatedImage.createFromFrameCounts explosionSheet 3 1 (float 0.1f) true
+        let mutable explosion = AnimatedImage.createFromFrameCounts explosionSheet 3 1 (float 500) true
         let mutable lastTime = DateTime.Now
         let mutable lastBulletTime = DateTime.Now
         let font =  textRenderer.LoadFont window "Assets/Basic.fnt"
@@ -194,7 +194,7 @@ let Start() =
                     | None -> ()
                 //window.DrawImage (window.TranslationTransform 100.0f 100.0f) explosionSheet
                 AnimatedImage.draw explosion window (window.TranslationTransform 100.0f 100.0f)
-                //explosion <- AnimatedImage.update (uint32 deltaMS) explosion
+                explosion <- AnimatedImage.update (uint32 deltaMS) explosion
                 let fpsStr = "fps: "+ (1000.0f/float32 deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform

@@ -32,6 +32,7 @@ module AnimatedImage =
                 subimage::acc
             ) acc
         ) List.empty
+        |> List.rev
     let createFromFrameWidth (imageStrip:Image) frameWidth frameHeight frameRate loop =
         let width= imageStrip.Size.X/float32 frameWidth
         let height = imageStrip.Size.Y/float32 frameHeight
@@ -57,7 +58,7 @@ module AnimatedImage =
             FrameRate = frameRate
             FrameIndexAndTimer = (0, float 0.0f)
             Loop = loop
-            Playing = false
+            Playing = true
             Finished = false
         }
         
