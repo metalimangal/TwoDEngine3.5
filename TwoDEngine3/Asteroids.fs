@@ -147,14 +147,16 @@ let Start() =
             bullets
     
     let UpdateBullets deltaMS (bl:BulletList) =
-        {bl.lastBulletTime+DateTime(deltaMS);
+        let newBulletList =
             bl.bullets
             |> List.map (fun bullet ->
-                NewtonianUpdate deltaMS bullet
+                NewtonianUpdate deltaMS bullet)
             |> List.filter (fun bullet ->
                 bullet.x > 0.0f && bullet.x < 800.0f
-                && bullet.y > 0.0f && bullet.y < 600.0f
-            )     
+                && bullet.y > 0.0f && bullet.y < 600.0f)
+        {lastBulletTime=bl.lastBulletTime+(TimeSpan.FromMilliseconds deltaMS)
+         bullets= newBulletList}
+        
     let ShipUpdate (ship:ShipType) deltaMS : ShipType =
             let shipObject = ship.shipObject
             let shipRV = if IsKeyDown Key.Left then -0.1f
