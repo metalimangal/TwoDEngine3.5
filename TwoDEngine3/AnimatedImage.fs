@@ -61,7 +61,12 @@ module AnimatedImage =
             Playing = true
             Finished = false
         }
-        
+    let play (image:AnimatedImage) =
+        {image with Playing = true}
+    let stop (image:AnimatedImage) =
+        {image with Playing = false}
+    let loop (loop:bool) (image:AnimatedImage) =
+        {image with Loop = loop}        
     let draw (image:AnimatedImage) (window:Window) (xform:Transform)=
         window.DrawImage xform image.ImageList.[fst image.FrameIndexAndTimer]
     
