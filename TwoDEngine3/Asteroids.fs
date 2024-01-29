@@ -29,23 +29,7 @@ module Key =
      let ESC = 27
      let SPACE = 32
 
-type NewtonianObject = {x:float32; y:float32;r:float32;
-                        vx:float32;vy:float32;vr:float32;
-                        img:Image}
-let NewtonianUpdate  deltaMS (obj:NewtonianObject)  =
-    let x = obj.x + obj.vx * (float32 deltaMS)
-    let y = obj.y + obj.vy * (float32 deltaMS)
-    let r = obj.r + obj.vr * (float32 deltaMS)
-    {obj with x=x;y=y;r=r}
 
-type BulletList = {lastBulletTime:DateTime;bullets:NewtonianObject list}
-type ShipType = {shipObject:NewtonianObject; bullets:BulletList}
-    
-type Player =
-    |Ship of ShipType
-    |Explosion of AnimatedImage
-    |Dead
-       
 let Wrap (w:float32) (h:float32) (obj:NewtonianObject) =
     let x = if obj.x+obj.img.Size.X< 0.0f then w
                 else if obj.x > w then 0.0f-obj.img.Size.X else obj.x
@@ -53,51 +37,12 @@ let Wrap (w:float32) (h:float32) (obj:NewtonianObject) =
                 else if obj.y > h then 0.0f-obj.img.Size.Y else obj.y
     {obj with x=x;y=y}
 
-let TryGetManager<'a> () =
-    let manager = ManagerRegistry.getManager<'a>()
-    match manager with
-    | Some m -> m
-    | None -> failwith "Manager not found"
-    
-let DegToRad (deg:float32) = deg * (float32 Math.PI) / 180.0f
 
-let IsKeyDown(asciicode:int) =
-    let inputDeviceManager = TryGetManager<InputDeviceInterface> ()
-    inputDeviceManager.PollState()
-    |> Map.values
-    |> Seq.fold (fun acc axisState ->
-        if acc = true then
-            acc
-        else
-            match axisState with
-            | KeyboardState kbdState ->
-                // debug code
-                //printfn "Keystate: %A\n" kbdState
-                //kbdState |> Seq.map(fun onechar ->
-                //                        int32 onechar)
-                //|> printfn "Keycodes: %A\n" 
-                kbdState
-                |> List.tryFind (fun keyState -> int keyState = asciicode)
-                |> function
-                    | Some x -> true
-                    | None -> false
-             | _ -> false
-        ) false
+
 let Start() =
     // Thes registrations will eventually be automatic runtims plugins
      //Register GraphicsManager
-    typedefof<GraphicsManagerSFML>
-    |> ManagerRegistry.addManager
-    //register textRenderer
-    typedefof<AngelCodeTextRenderer>
-    |> ManagerRegistry.addManager
-     //register InputManager
-    typedefof<InputManagerWinRawInput>
-    |> ManagerRegistry.addManager
-    //register CollisionManager
-    typedefof<SimpleCollisionManager>
-    |> ManagerRegistry.addManager
-    
+   
     let graphics = TryGetManager<GraphicsManager> ()
     let textRenderer = TryGetManager<TextManager> ()
     let inputDeviceManager = TryGetManager<InputDeviceInterface> ()
@@ -128,55 +73,9 @@ let Start() =
             )
          )
     
-    let CheckFireBullet (ship:ShipType):BulletList =
-        let bullets = ship.bullets
-        let shipObject = ship.shipObject
-        if IsKeyDown Key.SPACE then
-            let currentTime = DateTime.Now
-            let deltaMS = (currentTime - bullets.lastBulletTime).Milliseconds
-            if deltaMS > 100 then
-                let bullet = {
-                    x=shipObject.x;y=shipObject.y;r=shipObject.r
-                    vx=shipObject.vx;vy=shipObject.vy;vr=shipObject.vr;img=shipImage
-                }
-                let newBulletList = bullet::bullets.bullets
-                {lastBulletTime=currentTime; bullets =newBulletList}
-            else
-                bullets
-        else
-            bullets
     
-    let UpdateBullets deltaMS (bl:BulletList) =
-        let newBulletList =
-            bl.bullets
-            |> List.map (fun bullet ->
-                NewtonianUpdate deltaMS bullet)
-            |> List.filter (fun bullet ->
-                bullet.x > 0.0f && bullet.x < 800.0f
-                && bullet.y > 0.0f && bullet.y < 600.0f)
-        {lastBulletTime=bl.lastBulletTime+(TimeSpan.FromMilliseconds deltaMS)
-         bullets= newBulletList}
-        
-    let ShipUpdate (ship:ShipType) deltaMS : ShipType =
-            let shipObject = ship.shipObject
-            let shipRV = if IsKeyDown Key.Left then -0.1f
-                             elif IsKeyDown Key.Right then 0.1f
-                             else 0.0f
-            let shipXV = if IsKeyDown Key.Down then
-                            shipObject.r
-                            |> DegToRad |> sin |> fun xv -> xv*0.1f |>float32
-                         else 0.0f
-                         
-            let shipYV = if IsKeyDown Key.Down then
-                            shipObject.r
-                            |> DegToRad |> cos |> fun yv -> yv* -0.1f |>float32
-                         else 0.0f
-            let bullets =
-                           CheckFireBullet ship
-                           |> UpdateBullets deltaMS                        
-            let newShipObj:NewtonianObject = {ship.shipObject with vr=shipRV;vx=shipXV;vy=shipYV}
-            NewtonianUpdate deltaMS newShipObj 
-            |> Wrap 800.0f 600.0f |> fun x -> {shipObject=newShipObj;bullets=bullets}
+    
+   
             
                 
     let logic (window:Window) =
@@ -206,7 +105,6 @@ let Start() =
                 match Player with
                 | Ship ship ->
                     Player <- ShipUpdate ship deltaMS
-                    bullets <- CheckFireBullet Player bullets
                 | Explosion anim ->
                     Player <- anim |> AnimatedImage.update (uint32 deltaMS)
                     |> fun anim ->
@@ -221,24 +119,32 @@ let Start() =
                 
                 //display code
                 match Player with
-                | Ship ship ->
-                let shipXform = (window.TranslationTransform Player.x Player.y).Multiply
-                                 (window.RotationTransform Player.r)
-                window.Clear (SysColor.Black)
-                window.DrawImage shipXform  Player.img           // for asteroid in asteroids do
+                | Ship ship -> 
+                    let shipXform =
+                        (window.TranslationTransform
+                            ship.shipObject.x ship.shipObject.y).Multiply
+                            (window.RotationTransform ship.shipObject.r)
+                    window.Clear (SysColor.Black)
+                    window.DrawImage shipXform ship.shipObject.img
+                | Explosion anim ->
+                    window.TranslationTransform anim.x anim.y
+                    |> AnimatedImage.draw anim window
+                            // for asteroid in asteroids do
+                | Dead -> () //Eventually draw game over screen
                 asteroids
                 |>Seq.iter(fun asteroid ->
-                    let xform = (window.TranslationTransform asteroid.x asteroid.y)
-                                |> fun x -> x.Multiply
-                                                (window.TranslationTransform
-                                                        (asteroid.img.Size.X /2f)
-                                                        (asteroid.img.Size.Y /2f)) 
-                                |> fun x -> x.Multiply (window.RotationTransform asteroid.r)
-                                |> fun x -> x.Multiply
-                                                (window.TranslationTransform
-                                                        (-asteroid.img.Size.X /2f)
-                                                        (-asteroid.img.Size.Y /2f)) 
-                    window.DrawImage xform asteroid.img )
+                    let xform =
+                        (window.TranslationTransform asteroid.x asteroid.y)
+                        |> fun x -> x.Multiply
+                                        (window.TranslationTransform
+                                                (asteroid.img.Size.X /2f)
+                                                (asteroid.img.Size.Y /2f)) 
+                        |> fun x -> x.Multiply (window.RotationTransform asteroid.r)
+                        |> fun x -> x.Multiply
+                                        (window.TranslationTransform
+                                                (-asteroid.img.Size.X /2f)
+                                                (-asteroid.img.Size.Y /2f)) 
+                    window.DrawImage xform asteroid.img 
                 
                 let shipCicle:CollisionGeometry =
                     CircleCollider{Center=Vector2(ship.x,ship.y);Radius=ship.img.Size.Y/2f}

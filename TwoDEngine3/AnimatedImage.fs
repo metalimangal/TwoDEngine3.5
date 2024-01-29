@@ -1,4 +1,5 @@
 ﻿module ImageExtensions
+
 open System.Drawing
 open System.Numerics
 open TDE3ManagerInterfaces.GraphicsManagerInterface
