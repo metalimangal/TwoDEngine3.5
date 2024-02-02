@@ -1,4 +1,4 @@
-﻿module TwoDEngine3.NewtonianObject
+﻿module NewtonianObject
 
 open TDE3ManagerInterfaces.GraphicsManagerInterface
 
