@@ -89,7 +89,7 @@ let Start() =
             let deltaMS = (currentTime - lastTime).Milliseconds
           
             if deltaMS >10 then
-                Console.WriteLine ("deltaMS: " + deltaMS.ToString()) |> ignore
+               // Console.WriteLine ("deltaMS: " + deltaMS.ToString()) |> ignore
                 lastTime <- currentTime
                 // update state
                 PlayerObj <- Player.Update PlayerObj deltaMS        
@@ -100,7 +100,7 @@ let Start() =
                 window.Clear (SysColor.Black)  
                 match PlayerObj with
                 | Ship ship ->
-                    printfn $"{ship.shipObject.x} {ship.shipObject.y} {ship.shipObject.r}"
+                    //printfn $"{ship.shipObject.x} {ship.shipObject.y} {ship.shipObject.r}"
                     let xform =
                         window.TranslationTransform ship.shipObject.x ship.shipObject.y
                         |> fun x -> x.Multiply
@@ -139,7 +139,24 @@ let Start() =
                 let fpsStr = "fps: "+ (1000/deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
-                window.Show()
+                
+                match PlayerObj with
+                | Ship ship ->
+                     let shipCollison =  CircleCollider { Center = Vector2 (ship.shipObject.x, ship.shipObject.y);
+                                           Radius = float32 ship.shipObject.img.Size.X } 
+                //collision detection
+                     asteroids
+                     |> List.iter (fun asteroid ->
+                              let asteroidCollision = CircleCollider {Center= Vector2 (asteroid.x, asteroid.y);
+                                                       Radius = float32 asteroid.img.Size.X} 
+                              match collision.Collide shipCollison asteroidCollision with
+                              | Some result ->  PlayerObj <- Explosion {x=asteroid.x;y=asteroid.y;img=explosion}
+                                                printfn "Ship hit" |> ignore
+                              | None -> ()
+                          ) |> ignore
+                        
+                 | _ -> ()   
+                window.Show()  
                
         window.Close()
         ()
