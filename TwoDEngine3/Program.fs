@@ -24,6 +24,7 @@ type SysColor = System.Drawing.Color
 let main argv =
     //tempoary: set up the managers
     // To be replaced with runtime dynmaic loading
+  
     typedefof<GraphicsManagerSFML>
     |> ManagerRegistry.addManager
     //register textRenderer

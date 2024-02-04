@@ -93,9 +93,10 @@ module Player =
                      else 0.0f
         let bullets =  CheckFireBullet ship shipObject.img
                        |> UpdateBullets deltaMS                        
-        let newShipObj:NewtonianObject = {ship.shipObject with vr=shipRV;vx=shipXV;vy=shipYV}
-        NewtonianObject.NewtonianUpdate deltaMS newShipObj 
-        |> NewtonianObject.Wrap 800.0f 600.0f |> fun x -> {shipObject=newShipObj;bullets=bullets}
+        
+        {ship.shipObject with vr=shipRV;vx=shipXV;vy=shipYV}
+        |> NewtonianObject.NewtonianUpdate deltaMS  
+        |> NewtonianObject.Wrap 800.0f 600.0f |> fun x -> {shipObject=x;bullets=bullets}
     
      let Update (player:Player) deltaMS : Player =
         match player with

@@ -117,7 +117,8 @@ type InputManagerWinRawInput() as this =
                 |> ignore
        
        let doMouseEvent (devh:HANDLE) (dx:int) (dy:int) (buttons:UInt32)
-            (dWheel:int) =
+                        (dWheel:int):unit =
+        try 
             let devInfo:Nullable<DeviceInfo> = NativeAPI.GetDeviceInfo(devh)
             if devInfo.HasValue then
                 axisStateCollector.DeltaAnalogAxis(devInfo.Value.Names.Product+".deltaX", dx) |> ignore
@@ -141,7 +142,9 @@ type InputManagerWinRawInput() as this =
                     |> ignore
             else
                 ()
-                
+        with 
+            | ex -> Console.WriteLine(ex.Message)  // dirty but I can't find a win32 call to check devid
+            
        let uint32ToHidUsage  (usage:uint32):HIDDesktopUsages =
            let hid:HIDDesktopUsages =
                LanguagePrimitives.EnumOfValue usage

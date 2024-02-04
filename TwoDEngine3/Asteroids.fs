@@ -87,7 +87,10 @@ let Start() =
         while window.IsOpen() && not (Key.IsKeyDown Key.ESC) do
             let currentTime = DateTime.Now
             let deltaMS = (currentTime - lastTime).Milliseconds
-            if deltaMS >0 then
+          
+            if deltaMS >10 then
+                Console.WriteLine ("deltaMS: " + deltaMS.ToString()) |> ignore
+                lastTime <- currentTime
                 // update state
                 PlayerObj <- Player.Update PlayerObj deltaMS        
                 asteroids <- List.map (fun rock ->
@@ -97,8 +100,9 @@ let Start() =
                 window.Clear (SysColor.Black)  
                 match PlayerObj with
                 | Ship ship ->
+                    printfn $"{ship.shipObject.x} {ship.shipObject.y} {ship.shipObject.r}"
                     let xform =
-                        (window.TranslationTransform ship.shipObject.x ship.shipObject.y)
+                        window.TranslationTransform ship.shipObject.x ship.shipObject.y
                         |> fun x -> x.Multiply
                                         (window.TranslationTransform
                                                 (ship.shipObject.img.Size.X /2f)
@@ -131,26 +135,12 @@ let Start() =
                                                 (-asteroid.img.Size.Y /2f) )
                     window.DrawImage xform asteroid.img )
                 
-               // let shipCircle:CollisionGeometry =
-                //    CircleCollider{Center=Vector2(ship.x,ship.y);Radius=ship.img.Size.Y/2f}
-                //asteroids
-                //|> List.tryFind (fun asteroid ->
-                //    CircleCollider{Center=Vector2(asteroid.x,asteroid.y);Radius=asteroid.img.Size.Y/2f}
-                //    |> fun x -> collision.Collide shipCicle x
-                //    |> function
-                 //       | Some result -> true
-                 //       | _ -> false
-                 //   )
-                //|> function
-                 //   | Some x -> () //printfn "Collision detected"
-                 //   | None -> ()
-                //window.DrawImage (window.TranslationTransform 100.0f 100.0f) explosionSheet
-                
-                let fpsStr = "fps: "+ (1000.0f/float32 deltaMS).ToString()
+                            
+                let fpsStr = "fps: "+ (1000/deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
                 window.Show()
-                lastTime <- currentTime
+               
         window.Close()
         ()
             
