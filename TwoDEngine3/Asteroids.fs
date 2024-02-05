@@ -80,7 +80,7 @@ let Start() =
                                         vy=float32(RandomFloat -0.05 0.05)
                                         vr=float32(RandomFloat -0.1 0.1)
                                         img=bigAsteroid } ]
-        let mutable explosion = AnimatedImage.createFromFrameCounts explosionSheet 3 1 (float 500) false
+        let mutable explosion = AnimatedImage.createFromFrameCounts explosionSheet 3 1 (float 100) false
         let mutable lastTime = DateTime.Now
         let mutable lastBulletTime = DateTime.Now
        
@@ -98,15 +98,24 @@ let Start() =
                 
                 //display code
                 window.Clear (SysColor.Black)  
+               
+                
+                asteroids
+                |>List.iter(fun (asteroid:NewtonianObject) ->
+                    let xform =
+                        window.TranslationTransform asteroid.x asteroid.y 
+                        |> fun x -> x.Multiply (window.RotationTransform asteroid.r)
+                        |> fun x -> x.Multiply
+                                        (window.TranslationTransform
+                                                (-asteroid.img.Size.X /2f)
+                                                (-asteroid.img.Size.Y /2f) )
+                    window.DrawImage xform asteroid.img )
+                
                 match PlayerObj with
                 | Ship ship ->
                     //printfn $"{ship.shipObject.x} {ship.shipObject.y} {ship.shipObject.r}"
                     let xform =
-                        window.TranslationTransform ship.shipObject.x ship.shipObject.y
-                        |> fun x -> x.Multiply
-                                        (window.TranslationTransform
-                                                (ship.shipObject.img.Size.X /2f)
-                                                (ship.shipObject.img.Size.Y /2f)) 
+                        window.TranslationTransform ship.shipObject.x ship.shipObject.y 
                         |> fun x -> x.Multiply (window.RotationTransform ship.shipObject.r)
                         |> fun x -> x.Multiply
                                         (window.TranslationTransform
@@ -115,27 +124,12 @@ let Start() =
                     window.DrawImage xform ship.shipObject.img
                     
                 | Explosion expl ->
-                     window.TranslationTransform expl.x expl.y
-                     |> AnimatedImage.draw expl.img window
+                                  window.TranslationTransform
+                                     ((float32 -expl.img.FrameWidth)/2f+expl.x)
+                                     ((float32 -expl.img.FrameHeight)/2f+expl.y)
+                                  |>AnimatedImage.draw expl.img window
                             // for asteroid in asteroids do
-                | Dead -> () //Eventually draw game over screen
-                
-                asteroids
-                |>List.iter(fun (asteroid:NewtonianObject) ->
-                    let xform =
-                        window.TranslationTransform asteroid.x asteroid.y
-                        |> fun x -> x.Multiply
-                                        (window.TranslationTransform
-                                                (asteroid.img.Size.X /2f)
-                                                (asteroid.img.Size.Y /2f)) 
-                        |> fun x -> x.Multiply (window.RotationTransform asteroid.r)
-                        |> fun x -> x.Multiply
-                                        (window.TranslationTransform
-                                                (-asteroid.img.Size.X /2f)
-                                                (-asteroid.img.Size.Y /2f) )
-                    window.DrawImage xform asteroid.img )
-                
-                            
+                | Dead -> () //Eventually draw game over screen          
                 let fpsStr = "fps: "+ (1000/deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
@@ -143,14 +137,14 @@ let Start() =
                 match PlayerObj with
                 | Ship ship ->
                      let shipCollison =  CircleCollider { Center = Vector2 (ship.shipObject.x, ship.shipObject.y);
-                                           Radius = float32 ship.shipObject.img.Size.X } 
+                                           Radius = (max ship.shipObject.img.Size.X ship.shipObject.img.Size.Y) / 2.0f} 
                 //collision detection
                      asteroids
                      |> List.iter (fun asteroid ->
                               let asteroidCollision = CircleCollider {Center= Vector2 (asteroid.x, asteroid.y);
-                                                       Radius = float32 asteroid.img.Size.X} 
+                                                       Radius = (max asteroid.img.Size.X asteroid.img.Size.Y) / 2.0f} 
                               match collision.Collide shipCollison asteroidCollision with
-                              | Some result ->  PlayerObj <- Explosion {x=asteroid.x;y=asteroid.y;img=explosion}
+                              | Some result ->  PlayerObj <- Explosion {x=ship.shipObject.x;y=ship.shipObject.y;img=explosion}
                                                 printfn "Ship hit" |> ignore
                               | None -> ()
                           ) |> ignore
