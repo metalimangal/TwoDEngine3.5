@@ -129,6 +129,17 @@ let Start() =
                                                 (-ship.shipObject.img.Size.X /2f)
                                                 (-ship.shipObject.img.Size.Y /2f)) 
                     window.DrawImage xform ship.shipObject.img
+                    ship.bullets.bullets
+                    |> List.iter(
+                            fun bullet ->
+                                let xform =
+                                    window.TranslationTransform bullet.x bullet.y 
+                                    |> fun x -> x.Multiply
+                                                    (window.TranslationTransform
+                                                            (-bullet.img.Size.X /2f)
+                                                            (-bullet.img.Size.Y /2f))
+                                window.DrawImage xform ship.shipObject.img
+                        )
                     
                 | Explosion expl ->
                                   window.TranslationTransform
