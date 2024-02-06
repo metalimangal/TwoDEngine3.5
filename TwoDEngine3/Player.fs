@@ -102,7 +102,11 @@ module Player =
         match player with
         | Ship ship ->  ShipUpdate ship deltaMS |> Ship
         | Explosion expl -> AnimatedImage.update (uint32 deltaMS) expl.img
-                            |> fun newImg -> Explosion {expl with img=newImg}
+                            |> fun newImg ->
+                                if newImg.Playing then
+                                    Explosion {expl with img=newImg}
+                                else
+                                    Dead                   
         | Dead -> Dead
 
 

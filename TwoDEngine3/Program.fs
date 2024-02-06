@@ -30,11 +30,14 @@ let main argv =
     //register textRenderer
     typedefof<AngelCodeTextRenderer>
     |> ManagerRegistry.addManager
-     //register InputManager
-    typedefof<InputManagerWinRawInput>
-    |> ManagerRegistry.addManager
+    
+   
     //register CollisionManager
     typedefof<SimpleCollisionManager>
+    |> ManagerRegistry.addManager
+     
+      //register InputManager
+    typedefof<InputManagerWinRawInput>
     |> ManagerRegistry.addManager
     
     Asteroids.Start()

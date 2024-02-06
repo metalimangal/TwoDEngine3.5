@@ -71,21 +71,27 @@ module AnimatedImage =
     let draw (image:AnimatedImage) (window:Window) (xform:Transform)=
         window.DrawImage xform image.ImageList.[fst image.FrameIndexAndTimer]
     
-    let update (deltaTime:uint32) (image:AnimatedImage) : AnimatedImage =
+    let update (deltaTime:uint32) (image:AnimatedImage) : AnimatedImage  =
         if image.Playing then
-                {image with 
-                    FrameIndexAndTimer =
-                        if snd(image.FrameIndexAndTimer) + float deltaTime > image.FrameRate then
-                            ( if fst image.FrameIndexAndTimer + 1>= image.FrameCount then
-                                    if image.Loop then
-                                        0
-                                    else
-                                        image.FrameCount - 1
-                                else
-                                    fst image.FrameIndexAndTimer + 1
-                            , (snd image.FrameIndexAndTimer + float deltaTime - image.FrameRate) )
-                        else 
-                           (fst image.FrameIndexAndTimer, snd  image.FrameIndexAndTimer + float deltaTime)                
-                }
+                if snd(image.FrameIndexAndTimer) + float deltaTime > image.FrameRate then
+                    if fst image.FrameIndexAndTimer + 1>= image.FrameCount then
+                        if image.Loop then
+                            {image with
+                                FrameIndexAndTimer=
+                                    ( 0, snd image.FrameIndexAndTimer + float deltaTime - image.FrameRate)
+                            }
+                        else
+                            {image with
+                                    Playing = false       
+                            }
+                    else
+                        {image with
+                                FrameIndexAndTimer=
+                                   (fst image.FrameIndexAndTimer + 1 ,
+                                   snd image.FrameIndexAndTimer + float deltaTime - image.FrameRate)
+                            }
+                        
+                else
+                    image
         else
             image
