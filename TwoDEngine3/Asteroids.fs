@@ -50,6 +50,13 @@ let Start() =
                 Size(25, 30)
             )
          )
+    let bulletImage =
+        atlas.SubImage (
+            Rectangle(
+                Point(133, 75),
+                Size(6, 6)
+            )
+         )    
     let explosionSheet = atlas.SubImage (
             Rectangle(
                 Point(51, 142),
@@ -92,7 +99,7 @@ let Start() =
                // Console.WriteLine ("deltaMS: " + deltaMS.ToString()) |> ignore
                 lastTime <- currentTime
                 // update state
-                PlayerObj <- Player.Update PlayerObj deltaMS        
+                PlayerObj <- Player.Update PlayerObj deltaMS  bulletImage      
                 asteroids <- List.map (fun rock ->
                     NewtonianObject.NewtonianUpdate deltaMS rock |> NewtonianObject.Wrap 800f 600f) asteroids
                 

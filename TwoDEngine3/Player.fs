@@ -77,7 +77,7 @@ module Player =
         {lastBulletTime=bl.lastBulletTime+(TimeSpan.FromMilliseconds deltaMS)
          bullets= newBulletList}
         
-     let ShipUpdate (ship:ShipType) deltaMS : ShipType =
+     let ShipUpdate (ship:ShipType) deltaMS bulletImg : ShipType =
         let shipObject = ship.shipObject
         let shipRV = if Key.IsKeyDown Key.Left then -0.1f
                          elif Key.IsKeyDown Key.Right then 0.1f
@@ -91,16 +91,16 @@ module Player =
                         shipObject.r
                         |> DegToRad |> cos |> fun yv -> yv* -0.1f |>float32
                      else 0.0f
-        let bullets =  CheckFireBullet ship shipObject.img
+        let bullets =  CheckFireBullet ship bulletImg
                        |> UpdateBullets deltaMS                        
         
         {ship.shipObject with vr=shipRV;vx=shipXV;vy=shipYV}
         |> NewtonianObject.NewtonianUpdate deltaMS  
         |> NewtonianObject.Wrap 800.0f 600.0f |> fun x -> {shipObject=x;bullets=bullets}
     
-     let Update (player:Player) deltaMS : Player =
+     let Update (player:Player) deltaMS bulletImg : Player =
         match player with
-        | Ship ship ->  ShipUpdate ship deltaMS |> Ship
+        | Ship ship ->  ShipUpdate ship deltaMS bulletImg |> Ship
         | Explosion expl -> AnimatedImage.update (uint32 deltaMS) expl.img
                             |> fun newImg ->
                                 if newImg.Playing then
