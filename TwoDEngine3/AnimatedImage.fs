@@ -89,9 +89,12 @@ module AnimatedImage =
                                 FrameIndexAndTimer=
                                    (fst image.FrameIndexAndTimer + 1 ,
                                    snd image.FrameIndexAndTimer + float deltaTime - image.FrameRate)
-                            }
-                        
+                            }    
                 else
-                    image
+                    {image with
+                                FrameIndexAndTimer=
+                                   (fst image.FrameIndexAndTimer  ,
+                                   snd image.FrameIndexAndTimer + float deltaTime )
+                            }
         else
             image
