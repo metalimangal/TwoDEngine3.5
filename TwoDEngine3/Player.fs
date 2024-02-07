@@ -53,17 +53,17 @@ module Player =
      let CheckFireBullet (ship:ShipType) (bulletImg:Image):BulletList =
         let bullets = ship.bullets
         let shipObject = ship.shipObject
-        if Key.IsKeyDown Key.SPACE then
+        if Key.IsKeyDown Key.SPACE then 
             let currentTime = DateTime.Now
             let deltaMS = (currentTime - bullets.lastBulletTime).Milliseconds
-            if deltaMS > 100 then
-                let bullet = {
-                    x=shipObject.x;y=shipObject.y;r=shipObject.r
-                    vx=shipObject.vx;vy=shipObject.vy;vr=shipObject.vr;img=bulletImg}
-                let newBulletList = bullet::bullets.bullets
-                {lastBulletTime=currentTime; bullets =newBulletList}
-            else
-                bullets
+            //if deltaMS > 100 then
+            let bullet = {
+                x=shipObject.x;y=shipObject.y;r=shipObject.r
+                vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r));vr=0f;img=bulletImg}
+            let newBulletList = bullet::bullets.bullets
+            {lastBulletTime=currentTime; bullets =newBulletList}
+            //else
+              //  bullets
         else
             bullets
      let UpdateBullets deltaMS (bl:BulletList) =

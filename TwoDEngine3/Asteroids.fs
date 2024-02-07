@@ -132,13 +132,14 @@ let Start() =
                     ship.bullets.bullets
                     |> List.iter(
                             fun bullet ->
-                                let xform =
-                                    window.TranslationTransform bullet.x bullet.y 
+                                let bxform =
+                                    window.TranslationTransform bullet.x bullet.y
+                                    |> fun x -> x.Multiply (window.RotationTransform bullet.r)
                                     |> fun x -> x.Multiply
-                                                    (window.TranslationTransform
+                                                    (window.TranslationTransform 
                                                             (-bullet.img.Size.X /2f)
                                                             (-bullet.img.Size.Y /2f))
-                                window.DrawImage xform ship.shipObject.img
+                                window.DrawImage bxform bullet.img
                         )
                     
                 | Explosion expl ->
@@ -152,11 +153,13 @@ let Start() =
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
                 
+#if true     // do collision detection           
                 match PlayerObj with
                 | Ship ship ->
                      let shipCollison =  CircleCollider { Center = Vector2 (ship.shipObject.x, ship.shipObject.y);
                                            Radius = (max ship.shipObject.img.Size.X ship.shipObject.img.Size.Y) / 2.0f} 
                 //collision detection
+
                      asteroids
                      |> List.iter (fun asteroid ->
                               let asteroidCollision = CircleCollider {Center= Vector2 (asteroid.x, asteroid.y);
@@ -166,8 +169,10 @@ let Start() =
                                                 printfn "Ship hit" |> ignore
                               | None -> ()
                           ) |> ignore
+   
                         
-                 | _ -> ()   
+                 | _ -> ()
+#endif  
                 window.Show()  
                
         window.Close()
