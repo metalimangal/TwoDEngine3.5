@@ -56,14 +56,14 @@ module Player =
         if Key.IsKeyDown Key.SPACE then 
             let currentTime = DateTime.Now
             let deltaMS = (currentTime - bullets.lastBulletTime).Milliseconds
-            //if deltaMS > 100 then
-            let bullet = {
-                x=shipObject.x;y=shipObject.y;r=shipObject.r
-                vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r));vr=0f;img=bulletImg}
-            let newBulletList = bullet::bullets.bullets
-            {lastBulletTime=currentTime; bullets =newBulletList}
-            //else
-              //  bullets
+            if deltaMS > 1000 then
+                let bullet = {
+                    x=shipObject.x;y=shipObject.y;r=shipObject.r
+                    vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r));vr=0f;img=bulletImg}
+                let newBulletList = bullet::bullets.bullets
+                {lastBulletTime=currentTime; bullets =newBulletList}
+            else
+                bullets
         else
             bullets
      let UpdateBullets deltaMS (bl:BulletList) =
@@ -74,8 +74,7 @@ module Player =
             |> List.filter (fun bullet ->
                 bullet.x > 0.0f && bullet.x < 800.0f
                 && bullet.y > 0.0f && bullet.y < 600.0f)
-        {lastBulletTime=bl.lastBulletTime+(TimeSpan.FromMilliseconds deltaMS)
-         bullets= newBulletList}
+        {bl with bullets= newBulletList}
         
      let ShipUpdate (ship:ShipType) deltaMS bulletImg : ShipType =
         let shipObject = ship.shipObject
