@@ -56,7 +56,7 @@ module Player =
         if Key.IsKeyDown Key.SPACE then 
             let currentTime = DateTime.Now
             let deltaMS = (currentTime - bullets.lastBulletTime).Milliseconds
-            if deltaMS > 1000 then
+            if deltaMS > 500 then
                 let bullet = {
                     x=shipObject.x;y=shipObject.y;r=shipObject.r
                     vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r));vr=0f;img=bulletImg}

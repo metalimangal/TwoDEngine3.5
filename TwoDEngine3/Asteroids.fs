@@ -105,8 +105,7 @@ let Start() =
                 
                 //display code
                 window.Clear (SysColor.Black)  
-               
-                
+              
                 asteroids
                 |>List.iter(fun (asteroid:NewtonianObject) ->
                     let xform =
@@ -166,38 +165,44 @@ let Start() =
                                                        Radius = (max asteroid.img.Size.X asteroid.img.Size.Y) / 2.0f} 
                               match collision.Collide shipCollison asteroidCollision with
                               | Some result ->  PlayerObj <- Explosion {x=ship.shipObject.x;y=ship.shipObject.y;img=explosion}
-                                                //printfn "Ship hit" |> ignore
-                              | None -> ()
-                          ) |> ignore
+                                                printfn "Ship hit" |> ignore
+                              | None ->
+                                  ship.bulletList.bullets
+                                  |> List.fold (fun removalListsTuple bullet ->
+                                        let bulletCollision = CircleCollider {Center= Vector2 (bullet.x, bullet.y);
+                                                                   Radius = (max bullet.img.Size.X bullet.img.Size.Y) / 2.0f} 
+                                        asteroids
+                                        |> List.tryFind(fun asteroid ->
+                                             let asteroidCollision = CircleCollider {
+                                                                   Center= Vector2 (asteroid.x, asteroid.y);
+                                                                   Radius =
+                                                                       float32 (max asteroid.img.Size.X
+                                                                                    asteroid.img.Size.Y) / 2.0f}
+                                             match collision.Collide bulletCollision asteroidCollision with
+                                             | Some result ->  true
+                                             | None -> false                      
+                                        )
+                                        |> function
+                                           |Some asteroid ->
+                                                printfn ("Hit asteroid\n")
+                                                (bullet:: fst removalListsTuple, asteroid:: snd removalListsTuple)
+                                           |None -> removalListsTuple
+                                    ) (List.Empty,List.Empty)
+                                  |> fun removalListsTuple ->
+                                        match PlayerObj with
+                                        | Ship ship ->
+                                            asteroids <- asteroids
+                                                        |> List.except (snd removalListsTuple)
+                                            let newBulletList =
+                                                             {ship.bulletList with
+                                                                 bullets = ship.bulletList.bullets |> List.except (fst removalListsTuple)
+                                                             }
+                                                            
+                                            PlayerObj<- {ship with bulletList = newBulletList} |> Ship
+                                        |_ -> ()
+                                      ) |> ignore
                           
-                     ship.bulletList.bullets
-                     |> List.fold (fun removalListsTuple bullet ->
-                            let bulletCollision = CircleCollider {Center= Vector2 (bullet.x, bullet.y);
-                                                       Radius = (max bullet.img.Size.X bullet.img.Size.Y) / 2.0f} 
-                            asteroids
-                            |> List.tryFind(fun asteroid ->
-                                 let asteroidCollision = CircleCollider {
-                                                       Center= Vector2 (asteroid.x, asteroid.y);
-                                                       Radius =
-                                                           float32 (max asteroid.img.Size.X
-                                                                        asteroid.img.Size.Y) / 2.0f}
-                                 match collision.Collide bulletCollision asteroidCollision with
-                                 | Some result ->  true
-                                 | None -> false                      
-                            )
-                            |> function
-                               |Some asteroid ->
-                                    printfn ("Hit asteroid\n")
-                                    (bullet:: fst removalListsTuple, asteroid:: snd removalListsTuple)
-                               |None -> removalListsTuple
-                        ) (List.Empty,List.Empty)
-                     |> fun removalListsTuple ->
-                        asteroids <- asteroids
-                                        |> List.except (snd removalListsTuple)
-                        let newBulletList = {ship.bulletList with
-                                                bullets = ship.bulletList.bullets |> List.except (fst removalListsTuple)
-                                             }
-                        PlayerObj<- {ship with bulletList = newBulletList} |> Ship                    
+                                        
                  | _ -> ()
                 window.Show()  
                
