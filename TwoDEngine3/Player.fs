@@ -9,7 +9,7 @@ open ManagerUtils
 open TwoDEngine3.ManagerInterfaces
 
 type BulletList = {lastBulletTime:DateTime;bullets:NewtonianObject list}
-type ShipType = {shipObject:NewtonianObject; bullets:BulletList}
+type ShipType = {shipObject:NewtonianObject; bulletList:BulletList}
    
 type ExplosionType = {img:AnimatedImage;x:float32;y:float32;}    
 type Player =
@@ -51,7 +51,7 @@ module Key =
 
 module Player =
      let CheckFireBullet (ship:ShipType) (bulletImg:Image):BulletList =
-        let bullets = ship.bullets
+        let bullets = ship.bulletList
         let shipObject = ship.shipObject
         if Key.IsKeyDown Key.SPACE then 
             let currentTime = DateTime.Now
@@ -96,7 +96,7 @@ module Player =
         
         {ship.shipObject with vr=shipRV;vx=shipXV;vy=shipYV}
         |> NewtonianObject.NewtonianUpdate deltaMS  
-        |> NewtonianObject.Wrap 800.0f 600.0f |> fun x -> {shipObject=x;bullets=bullets}
+        |> NewtonianObject.Wrap 800.0f 600.0f |> fun x -> {shipObject=x;bulletList=bullets}
     
      let Update (player:Player) deltaMS bulletImg : Player =
         match player with

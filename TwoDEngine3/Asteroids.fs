@@ -77,7 +77,7 @@ let Start() =
             x=400.0f;y=300.0f;r=0f;
             vx=0.0f;vy=0.0f;vr=0f;img=shipImage}
         let startBulletList = {lastBulletTime=DateTime(0);bullets=[]}    
-        let mutable PlayerObj = Ship {shipObject=startShipObj;bullets=startBulletList}
+        let mutable PlayerObj = Ship {shipObject=startShipObj;bulletList=startBulletList}
         let mutable asteroids:NewtonianObject list =
                                     [ for i in 1..10 -> {
                                         x=float32(Random.Next(0,800))
@@ -129,7 +129,7 @@ let Start() =
                                                 (-ship.shipObject.img.Size.X /2f)
                                                 (-ship.shipObject.img.Size.Y /2f)) 
                     window.DrawImage xform ship.shipObject.img
-                    ship.bullets.bullets
+                    ship.bulletList.bullets
                     |> List.iter(
                             fun bullet ->
                                 let bxform =
@@ -152,8 +152,8 @@ let Start() =
                 let fpsStr = "fps: "+ (1000/deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
-                
-#if true     // do collision detection           
+  
+     // do collision detection           
                 match PlayerObj with
                 | Ship ship ->
                      let shipCollison =  CircleCollider { Center = Vector2 (ship.shipObject.x, ship.shipObject.y);
@@ -166,13 +166,39 @@ let Start() =
                                                        Radius = (max asteroid.img.Size.X asteroid.img.Size.Y) / 2.0f} 
                               match collision.Collide shipCollison asteroidCollision with
                               | Some result ->  PlayerObj <- Explosion {x=ship.shipObject.x;y=ship.shipObject.y;img=explosion}
-                                                printfn "Ship hit" |> ignore
+                                                //printfn "Ship hit" |> ignore
                               | None -> ()
                           ) |> ignore
-   
-                        
+                          
+                     ship.bulletList.bullets
+                     |> List.fold (fun removalListsTuple bullet ->
+                            let bulletCollision = CircleCollider {Center= Vector2 (bullet.x, bullet.y);
+                                                       Radius = (max bullet.img.Size.X bullet.img.Size.Y) / 2.0f} 
+                            asteroids
+                            |> List.tryFind(fun asteroid ->
+                                 let asteroidCollision = CircleCollider {
+                                                       Center= Vector2 (asteroid.x, asteroid.y);
+                                                       Radius =
+                                                           float32 (max asteroid.img.Size.X
+                                                                        asteroid.img.Size.Y) / 2.0f}
+                                 match collision.Collide bulletCollision asteroidCollision with
+                                 | Some result ->  true
+                                 | None -> false                      
+                            )
+                            |> function
+                               |Some asteroid ->
+                                    printfn ("Hit asteroid\n")
+                                    (bullet:: fst removalListsTuple, asteroid:: snd removalListsTuple)
+                               |None -> removalListsTuple
+                        ) (List.Empty,List.Empty)
+                     |> fun removalListsTuple ->
+                        asteroids <- asteroids
+                                        |> List.except (snd removalListsTuple)
+                        let newBulletList = {ship.bulletList with
+                                                bullets = ship.bulletList.bullets |> List.except (fst removalListsTuple)
+                                             }
+                        PlayerObj<- {ship with bulletList = newBulletList} |> Ship                    
                  | _ -> ()
-#endif  
                 window.Show()  
                
         window.Close()
