@@ -17,6 +17,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GraphicsManagerSFML", "Grap
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SimpleCollisionManager", "SimpleCollisionManager\SimpleCollisionManager.fsproj", "{245157E0-F7CB-40B1-874D-02079B0A7B07}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "InputManagerSilk", "InputManagerSilk\InputManagerSilk.fsproj", "{54D63FA2-0FF8-4A4F-A357-7A48328971E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,12 @@ Global
 		{245157E0-F7CB-40B1-874D-02079B0A7B07}.Release|Any CPU.Build.0 = Release|Any CPU
 		{245157E0-F7CB-40B1-874D-02079B0A7B07}.DebugWindows|Any CPU.ActiveCfg = Debug|Any CPU
 		{245157E0-F7CB-40B1-874D-02079B0A7B07}.DebugWindows|Any CPU.Build.0 = Debug|Any CPU
+		{54D63FA2-0FF8-4A4F-A357-7A48328971E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54D63FA2-0FF8-4A4F-A357-7A48328971E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54D63FA2-0FF8-4A4F-A357-7A48328971E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54D63FA2-0FF8-4A4F-A357-7A48328971E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54D63FA2-0FF8-4A4F-A357-7A48328971E7}.DebugWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{54D63FA2-0FF8-4A4F-A357-7A48328971E7}.DebugWindows|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
