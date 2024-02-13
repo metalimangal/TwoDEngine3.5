@@ -8,8 +8,8 @@ open ImageExtensions
 open ManagerUtils
 open TwoDEngine3.ManagerInterfaces
 
-type BulletList = {lastBulletTime:DateTime;bullets:NewtonianObject list}
-type ShipType = {shipObject:NewtonianObject; bulletList:BulletList}
+
+type ShipType = {shipObject:NewtonianObject; lastFired:DateTime}
    
 type ExplosionType = {img:AnimatedImage;x:float32;y:float32;}    
 type Player =
@@ -50,33 +50,20 @@ module Key =
             ) false
 
 module Player =
-     let CheckFireBullet (ship:ShipType) (bulletImg:Image):BulletList =
-        let bullets = ship.bulletList
+     let CheckFireBullet (ship:ShipType)  =
         let shipObject = ship.shipObject
         if Key.IsKeyDown Key.SPACE then 
             let currentTime = DateTime.Now
-            let deltaMS = (currentTime - bullets.lastBulletTime).Milliseconds
+            let deltaMS = (currentTime - ship.lastFired).Milliseconds
             if deltaMS > 500 then
-                let bullet = {
-                    x=shipObject.x;y=shipObject.y;r=shipObject.r
-                    vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r));vr=0f;img=bulletImg}
-                let newBulletList = bullet::bullets.bullets
-                {lastBulletTime=currentTime; bullets =newBulletList}
+                true
             else
-                bullets
+                false
         else
-            bullets
-     let UpdateBullets deltaMS (bl:BulletList) =
-        let newBulletList =
-            bl.bullets
-            |> List.map (fun bullet ->
-                NewtonianObject.NewtonianUpdate deltaMS bullet)
-            |> List.filter (fun bullet ->
-                bullet.x > 0.0f && bullet.x < 800.0f
-                && bullet.y > 0.0f && bullet.y < 600.0f)
-        {bl with bullets= newBulletList}
+            false
+     
         
-     let ShipUpdate (ship:ShipType) deltaMS bulletImg : ShipType =
+     let ShipUpdate (ship:ShipType) deltaMS  : ShipType =
         let shipObject = ship.shipObject
         let shipRV = if Key.IsKeyDown Key.Left then -0.1f
                          elif Key.IsKeyDown Key.Right then 0.1f
@@ -90,16 +77,16 @@ module Player =
                         shipObject.r
                         |> DegToRad |> cos |> fun yv -> yv* -0.1f |>float32
                      else 0.0f
-        let bullets =  CheckFireBullet ship bulletImg
-                       |> UpdateBullets deltaMS                        
-        
+                          
         {ship.shipObject with vr=shipRV;vx=shipXV;vy=shipYV}
         |> NewtonianObject.NewtonianUpdate deltaMS  
-        |> NewtonianObject.Wrap 800.0f 600.0f |> fun x -> {shipObject=x;bulletList=bullets}
+        |> NewtonianObject.Wrap 800.0f 600.0f |> fun shipObj -> {ship with shipObject = shipObj }
+        
     
      let Update (player:Player) deltaMS bulletImg : Player =
         match player with
-        | Ship ship ->  ShipUpdate ship deltaMS bulletImg |> Ship
+        | Ship ship ->  ShipUpdate ship deltaMS  |> Ship
+                         
         | Explosion expl -> AnimatedImage.update (uint32 deltaMS) expl.img
                             |> fun newImg ->
                                 if newImg.Playing then

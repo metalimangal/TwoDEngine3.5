@@ -76,8 +76,8 @@ let Start() =
         let startShipObj = {
             x=400.0f;y=300.0f;r=0f;
             vx=0.0f;vy=0.0f;vr=0f;img=shipImage}
-        let startBulletList = {lastBulletTime=DateTime(0);bullets=[]}    
-        let mutable PlayerObj = Ship {shipObject=startShipObj;bulletList=startBulletList}
+        let mutable bulletList = List.empty;   
+        let mutable PlayerObj = Ship {shipObject=startShipObj;lastFired = DateTime.Now }
         let mutable asteroids:NewtonianObject list =
                                     [ for i in 1..10 -> {
                                         x=float32(Random.Next(0,800))
@@ -89,7 +89,6 @@ let Start() =
                                         img=bigAsteroid } ]
         let mutable explosion = AnimatedImage.createFromFrameCounts explosionSheet 3 1 (float 100) false
         let mutable lastTime = DateTime.Now
-        let mutable lastBulletTime = DateTime.Now
        
         while window.IsOpen() && not (Key.IsKeyDown Key.ESC) do
             let currentTime = DateTime.Now
@@ -99,9 +98,20 @@ let Start() =
                // Console.WriteLine ("deltaMS: " + deltaMS.ToString()) |> ignore
                 lastTime <- currentTime
                 // update state
-                PlayerObj <- Player.Update PlayerObj deltaMS  bulletImage      
+                PlayerObj <- Player.Update PlayerObj deltaMS  bulletImage
+                bulletList <- match PlayerObj with
+                                |Ship ship ->
+                                        let shipObject = ship.shipObject
+                                        if (Player.CheckFireBullet ship) then
+                                             { shipObject with
+                                                vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r))
+                                                vr=0f;img=bulletImage}::bulletList
+                                        else
+                                            bulletList
+                                 | _ -> bulletList                                
                 asteroids <- List.map (fun rock ->
                     NewtonianObject.NewtonianUpdate deltaMS rock |> NewtonianObject.Wrap 800f 600f) asteroids
+                
                 
                 //display code
                 window.Clear (SysColor.Black)  
@@ -128,7 +138,7 @@ let Start() =
                                                 (-ship.shipObject.img.Size.X /2f)
                                                 (-ship.shipObject.img.Size.Y /2f)) 
                     window.DrawImage xform ship.shipObject.img
-                    ship.bulletList.bullets
+                    bulletList
                     |> List.iter(
                             fun bullet ->
                                 let bxform =
@@ -167,7 +177,7 @@ let Start() =
                               | Some result ->  PlayerObj <- Explosion {x=ship.shipObject.x;y=ship.shipObject.y;img=explosion}
                                                 printfn "Ship hit" |> ignore
                               | None ->
-                                  ship.bulletList.bullets
+                                  bulletList
                                   |> List.fold (fun removalListsTuple bullet ->
                                         let bulletCollision = CircleCollider {Center= Vector2 (bullet.x, bullet.y);
                                                                    Radius = (max bullet.img.Size.X bullet.img.Size.Y) / 2.0f} 
@@ -193,12 +203,8 @@ let Start() =
                                         | Ship ship ->
                                             asteroids <- asteroids
                                                         |> List.except (snd removalListsTuple)
-                                            let newBulletList =
-                                                             {ship.bulletList with
-                                                                 bullets = ship.bulletList.bullets |> List.except (fst removalListsTuple)
-                                                             }
-                                                            
-                                            PlayerObj<- {ship with bulletList = newBulletList} |> Ship
+                                            bulletList <- bulletList
+                                                        |> List.except (fst removalListsTuple)
                                         |_ -> ()
                                       ) |> ignore
                           
