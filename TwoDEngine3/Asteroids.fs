@@ -103,12 +103,15 @@ let Start() =
                                 |Ship ship ->
                                         let shipObject = ship.shipObject
                                         if (Player.CheckFireBullet ship) then
+                                             PlayerObj <- Ship {ship with lastFired = DateTime.Now}
                                              { shipObject with
                                                 vy= -cos(DegToRad(shipObject.r));vx= sin(DegToRad(shipObject.r))
                                                 vr=0f;img=bulletImage}::bulletList
                                         else
                                             bulletList
-                                 | _ -> bulletList                                
+                                 | _ -> bulletList
+                bulletList <- NewtonianObject.NewtonianUpdateList deltaMS bulletList
+                              |> NewtonianObject.RemoveOffScreen 800f 600f
                 asteroids <- List.map (fun rock ->
                     NewtonianObject.NewtonianUpdate deltaMS rock |> NewtonianObject.Wrap 800f 600f) asteroids
                 
@@ -161,6 +164,7 @@ let Start() =
                 let fpsStr = "fps: "+ (1000/deltaMS).ToString()
                 font.MakeText fpsStr
                 |> fun x -> x.Draw window window.IdentityTransform
+                
   
      // do collision detection           
                 match PlayerObj with

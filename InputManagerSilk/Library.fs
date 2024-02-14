@@ -54,6 +54,7 @@ type InputManagerSilk() as self =
         
     interface InputDeviceInterface with
         member this.Controllers() = 
-            ()
-        member this.PollState() =     
-    end
+            List.Empty
+        member this.PollState() =
+            Map.empty
+        end
