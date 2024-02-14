@@ -1,23 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="AxisStateCollector.fs" />
-        <Compile Include="Library.fs" />
+        <Compile Include="Library.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\RawInputLight\RawInputLight\RawInputLight.csproj" />
       <ProjectReference Include="..\TDE3ManagerInterfaces\TDE3ManagerInterfaces.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Remove="FSharp.Core" />
-      <PackageReference Include="RawInputLight" Version="1.1.5" />
+      <PackageReference Include="Silk.NET" Version="2.20.0" />
+      <PackageReference Include="Silk.NET.Input" Version="2.20.0" />
     </ItemGroup>
 
 </Project>

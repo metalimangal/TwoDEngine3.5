@@ -11,6 +11,8 @@ open Windows.Win32.Devices.HumanInterfaceDevice
 open Windows.Win32.Foundation
 open AxisStateCollector
  
+
+ 
 type AxisNode(parent:Node,name) =
         interface Node with
             member val Name:string = name with get
