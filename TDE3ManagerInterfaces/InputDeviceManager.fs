@@ -39,7 +39,7 @@ and Node =
     abstract Path: string with get
     
 type InputDeviceInterface =
-    abstract Controllers : unit -> Node list
+    abstract Controllers : unit -> Node list option
     // gets changes since last update
     // The first map is added nodes
     // The second map is removed nodes

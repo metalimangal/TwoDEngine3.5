@@ -201,24 +201,31 @@ type InputManagerWinRawInput() as this =
        interface InputDeviceInterface with
            member this.Controllers() =
                NativeAPI.RefreshDeviceInfo()
-               NativeAPI.GetDevices()
-               |> Array.fold(fun state (devInfo:DeviceInfo) ->
-                       // Console.WriteLine(devInfo.Names.Product+":"+
-                        //                  devInfo.DeviceCaps.Usage.ToString())
-                        let usage:HIDDesktopUsages =
-                            Microsoft.FSharp.Core.LanguagePrimitives.
-                                EnumOfValue<uint, HIDDesktopUsages>(
-                                    ((uint devInfo.DeviceCaps.UsagePage)<<<16)|||
-                                     uint devInfo.DeviceCaps.Usage)
-                        match usage  with
-                        | HIDDesktopUsages.GenericDesktopMouse ->
-                            MouseNode(devInfo):>Node :: state
-                        | HIDDesktopUsages.GenericDesktopKeyboard ->
-                            KeyboardNode(devInfo):>Node :: state
-                        | HIDDesktopUsages.GenericDesktopJoystick ->
-                            JoystickNode(devInfo):>Node :: state
-                        | _ -> state
-                   ) List.Empty
+               NativeAPI.LastError
+               |> function
+                   |0u ->
+                       NativeAPI.GetDevices()
+                       |> Array.fold(fun state (devInfo:DeviceInfo) ->
+                               // Console.WriteLine(devInfo.Names.Product+":"+
+                                //                  devInfo.DeviceCaps.Usage.ToString())
+                                let usage:HIDDesktopUsages =
+                                    Microsoft.FSharp.Core.LanguagePrimitives.
+                                        EnumOfValue<uint, HIDDesktopUsages>(
+                                            ((uint devInfo.DeviceCaps.UsagePage)<<<16)|||
+                                             uint devInfo.DeviceCaps.Usage)
+                                match usage  with
+                                | HIDDesktopUsages.GenericDesktopMouse ->
+                                    MouseNode(devInfo):>Node :: state
+                                | HIDDesktopUsages.GenericDesktopKeyboard ->
+                                    KeyboardNode(devInfo):>Node :: state
+                                | HIDDesktopUsages.GenericDesktopJoystick ->
+                                    JoystickNode(devInfo):>Node :: state
+                                | _ -> state
+                           ) List.Empty
+                        |> Some
+                   | _  ->
+                       printfn $"Error code in input: {NativeAPI.LastError} "
+                       None
           
            member this.PollState() = 
                axisStateCollector.GetState()
