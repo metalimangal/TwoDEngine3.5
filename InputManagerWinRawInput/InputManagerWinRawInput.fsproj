@@ -19,4 +19,8 @@
       <PackageReference Remove="FSharp.Core" />
     </ItemGroup>
 
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="rd ..\TwoDEngine3\Plugins\$(ProjectName)  /S; xcopy bin\$(Configuration) ..\TwoDEngine3\Plugins\$(ProjectName) /E/H/I;" />
+    </Target>
+
 </Project>

@@ -4,6 +4,7 @@ open System
 open System.Collections.Concurrent
 open System.Collections.Generic
 open System.Threading
+open ManagerRegistry
 open RawInputLight
 open TDE3ManagerInterfaces.InputDevices
 open TwoDEngine3.ManagerInterfaces.InputManager
@@ -106,6 +107,8 @@ type JoystickNode(devInfo:DeviceInfo) as this =
             |> List.concat
             )
 
+[<Manager("Input interface for windows Raw Input",
+          supportedSystems.Windows )>]
 type InputManagerWinRawInput() as this =
        let mutable rawInput: RawInput option = None
        let mutable oldStateMap = Map.empty

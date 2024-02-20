@@ -17,4 +17,8 @@
       <PackageReference Include="SFML.Net" Version="2.5.1" />
     </ItemGroup>
 
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="rd ..\TwoDEngine3\Plugins\$(ProjectName)  /S; xcopy bin\$(Configuration) ..\TwoDEngine3\Plugins\$(ProjectName) /E/H/I;" />
+    </Target>
+
 </Project>

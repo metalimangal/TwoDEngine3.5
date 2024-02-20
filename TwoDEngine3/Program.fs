@@ -1,22 +1,31 @@
 module TwoDEngine3
 open System
-open AngelCodeTextRenderer
-open GraphicsManagerSFML
-open InputManagerWinRawInput
-open SimpleCollisionManager
-open TDE3ManagerInterfaces.CollisionManagerInterface
-open TDE3ManagerInterfaces.GraphicsManagerInterface
-open TDE3ManagerInterfaces.MouseAndKeyboardManager
-open TDE3ManagerInterfaces.TextRendererInterfaces
-open TDE3ManagerInterfaces.InputDevices
-open System.Drawing
+open System.IO
+open System.Reflection
+open ManagerRegistry
 
 type SysColor = System.Drawing.Color
 
 (*   Asteriods test program by JPK *)
 
 
+let rec RecursiveGetAssemblies (path:string option) =
+    let mypath =
+                 match path with
+                 | Some s -> s
+                 | None -> Environment.CurrentDirectory
+    let dinfo = DirectoryInfo(mypath)
+    let assemblies =
+        dinfo.EnumerateFiles("*.dll")
+        |> Seq.map (fun fileInfo -> Assembly.LoadFile fileInfo.FullName)
+    dinfo.GetDirectories()
+    |> Seq.fold (
+            fun state dinfo ->
+                Seq.concat [RecursiveGetAssemblies (Some dinfo.FullName);assemblies] 
+        ) assemblies
     
+                 
+
 
 
 [<EntryPoint>]
@@ -24,23 +33,17 @@ type SysColor = System.Drawing.Color
 let main argv =
     //tempoary: set up the managers
     // To be replaced with runtime dynmaic loading
-  
-    typedefof<GraphicsManagerSFML>
-    |> ManagerRegistry.addManager
-    //register textRenderer
-    typedefof<AngelCodeTextRenderer>
-    |> ManagerRegistry.addManager
     
-   
-    //register CollisionManager
-    typedefof<SimpleCollisionManager>
-    |> ManagerRegistry.addManager
-     
-      //register InputManager
-    typedefof<InputManagerWinRawInput>
-    |> ManagerRegistry.addManager
+    RecursiveGetAssemblies None
+    |> Seq.iter (fun assembly ->
+        assembly.GetTypes()
+        |> Array.filter (fun t ->
+                CustomAttributeExtensions.IsDefined(t,typeof<Manager>)
+            )
+        |> Array.iter (fun t -> ManagerRegistry.addManager(t))
+     )
     
-    Asteroids.Start()
+    Asteroids.Start
     0 // return an integer exit code
     
    

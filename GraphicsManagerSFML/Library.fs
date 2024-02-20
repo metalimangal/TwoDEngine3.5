@@ -1,5 +1,6 @@
 ﻿namespace GraphicsManagerSFML
 open System.IO
+open ManagerRegistry
 open SFML.Graphics 
 open SFML.System
 open SFML.Window
@@ -88,6 +89,8 @@ and WindowSFML(sfmlWindow:SFWindow,gm:GraphicsManager) =
         override this.Show() = sfmlWindow.Display()
         override this.IsOpen() = sfmlWindow.IsOpen
             
+[<Manager("Graphics interface forSFML",
+          supportedSystems.Windows )>]
 type GraphicsManagerSFML() =
     interface GraphicsManager with
         override this.OpenWindow videoMode name  =

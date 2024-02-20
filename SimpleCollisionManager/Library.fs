@@ -1,8 +1,12 @@
 ﻿namespace SimpleCollisionManager
 
 open System.Numerics
+open ManagerRegistry
 open TDE3ManagerInterfaces.CollisionManagerInterface
 
+[<Manager("A simple spherical collision detector",
+          supportedSystems.Windows ||| supportedSystems.Linux ||| supportedSystems.Mac |||
+          supportedSystems.Wasm)>]
 type SimpleCollisionManager() =
     interface CollisionManager with
         override this.Collide  (collider1:CollisionGeometry) (collider2:CollisionGeometry) : CollisionResult option =
