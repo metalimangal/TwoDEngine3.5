@@ -1,2 +1,66 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+﻿open SFML.Window
+open SFML.Graphics
+open SFML.System
+open System.Collections.Generic
+
+type Particle() =
+    let mutable position = Vector2f(0.f, 0.f)
+    let mutable velocity = Vector2f(0.f, 0.f)
+    let mutable color = Color.White
+    let mutable lifespan = 0.f // Lifespan in seconds
+
+    member this.Update (deltaTime: float) =
+        // Update particle position
+        position <- Vector2f(position.X + velocity.X * float32 deltaTime, position.Y + velocity.Y * float32 deltaTime)
+        // Decrease lifespan
+        lifespan <- lifespan - float32 deltaTime
+
+    member this.IsAlive = lifespan > 0.f
+
+    member this.Draw (window: RenderWindow) =
+        if this.IsAlive then
+            let shape = new CircleShape(5.f)
+            shape.Position <- position
+            shape.FillColor <- color
+            window.Draw(shape)
+
+    member this.Position with get() = position and set(value) = position <- value
+    member this.Velocity with get() = velocity and set(value) = velocity <- value
+    member this.Lifespan with get() = lifespan and set(value) = lifespan <- value
+    member this.Color with get() = color and set(value) = color <- value
+
+[<EntryPoint>]
+let main argv =
+    // Create a window
+    let mode = VideoMode(800u, 600u)
+    let window = new RenderWindow(mode, "Particle System with SFML")
+    window.SetFramerateLimit(60u)
+
+    let rand = System.Random()
+    let particles = List<Particle>()
+
+    // Main loop
+    while window.IsOpen do
+        if Keyboard.IsKeyPressed(Keyboard.Key.Escape) then
+            window.Close()
+        
+        window.Clear(Color.Black)
+
+        // Add a new particle at a random position with a random velocity
+        if particles.Count < 100 then
+            let p = Particle()
+            p.Position <- Vector2f(float32 (rand.Next(0, int mode.Width)), float32 (rand.Next(0, int mode.Height)))
+            p.Velocity <- Vector2f((float32 (rand.NextDouble()) - 0.5f) * 100.f, (float32 (rand.NextDouble()) - 0.5f) * 100.f)
+            p.Lifespan <- 5.f // 5 seconds
+            particles.Add(p)
+
+        // Update and draw particles
+        for particle in particles do
+            particle.Update(float(1.f /  60.0f)) // Update based on frame rate
+            particle.Draw(window)
+
+        // Remove dead particles
+        particles.RemoveAll(fun p -> not p.IsAlive)
+
+        window.Display()
+    0 // Return code
