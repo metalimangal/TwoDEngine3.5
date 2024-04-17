@@ -60,7 +60,7 @@ let main argv =
             particle.Draw(window)
 
         // Remove dead particles
-        particles.RemoveAll(fun p -> not p.IsAlive)
+        particles.RemoveAll(fun p -> not p.IsAlive) |> ignore
 
         window.Display()
-    0 // Return code
+    0 
