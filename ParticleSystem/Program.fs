@@ -31,7 +31,12 @@ let main argv =
 
         window.Display()
 
-        mainLoop updatedParticles
+        if Keyboard.IsKeyPressed(Keyboard.Key.Escape) then
+            window.Close()
+            
+
+        if window.IsOpen then
+            mainLoop updatedParticles
 
 
     let initialParticles = initializeParticles 100 None (Some Color.Red)
