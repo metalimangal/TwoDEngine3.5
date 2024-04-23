@@ -96,8 +96,8 @@ let main argv =
         let color = Color(byte (random.Next(256)), byte (random.Next(256)), byte (random.Next(256)), 255uy)
         // Calculate elapsed time
         let elapsed = timer.Restart().AsSeconds()
-        ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 360 20.0
-        //ParticleSystem.emitFromPoint(position) count color 5.f 3.f 360 20.0
+        //ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0
+        ParticleSystem.emitFromPoint(position) count color 5.f 3.f 10 120.0
         // Update particles
         ParticleSystem.update(1.f /  60.0f)
 

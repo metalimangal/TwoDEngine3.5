@@ -5,6 +5,9 @@ open SFML.System
 open SFML.Graphics
 open System.Collections.Generic
 open System
+open GraphicsManagerSFML
+open TDE3ManagerInterfaces
+open TDE3ManagerInterfaces.GraphicsManagerInterface
 
 // Define the particle type
 type Particle = {
@@ -58,16 +61,37 @@ module ParticleSystem =
 
     // Draw all particles
     let draw (window: RenderWindow) = 
-        // Using Seq.iter to avoid potential issues with mutable lists
-        Seq.iter (fun p ->
+        particles |> Seq.iter (fun p ->
             if p.StartDelay <= 0.0f then
                 let radius = p.Size / 2.0f // Assuming Size is diameter, SFML expects radius
-                let shape = new CircleShape(float32 radius) // SFML expects a float value for the radius
+                let shape = new CircleShape(radius) // SFML expects a float value for the radius
                 shape.Position <- p.Position
                 shape.FillColor <- p.Color
-                // Draw the shape on the window
-                window.Draw(shape) // No casting to Drawable needed
-        ) (particles :> seq<Particle>) // Cast the list to a sequence if needed
+                // Cast window to RenderWindow if needed, or directly use drawing capabilities if supported
+                //for i = particles.Count - 1 downto 0 do
+                //window.DrawImage transform particles.[i]
+                window.Draw(shape :> Drawable))
+
+
+    //let drawParticle (window: TDE3ManagerInterfaces.GraphicsManagerInterface.Window) (particle: Particle) =
+    //    let radius = particle.Size / 2.0f  // Assuming Size is diameter
+    //    let xform =
+    //        window.TranslationTransform particle.Position.X particle.Position.Y
+    //        |> fun x -> x.Multiply (window.RotationTransform 0.0f)  
+    //        |> fun x -> x.Multiply
+    //                        (window.TranslationTransform
+    //                                (-radius)  
+    //                                (-radius)) 
+    //    // Assuming we use a simple circle as a particle representation
+    //    //let color = System.Drawing.Color.FromArgb(int particle.Color.A, int particle.Color.R, int particle.Color.G, int particle.Color.B)
+    //    //window.DrawImage xform radius |> ignore
+        
+
+    //let draw2 (window: TDE3ManagerInterfaces.GraphicsManagerInterface.Window) = 
+    //    for i = particles.Count - 1 downto 0 do
+    //        let p = particles.[i]
+    //        if p.StartDelay <= 0.0f then
+    //            drawParticle window p
 
 
 
