@@ -82,7 +82,7 @@ let main argv =
     let timer = new Clock()
 
     // Emit particles once, if you only want a single burst
-    let count = 1
+    let count = 5000
     
     let position = Vector2f(400.0f, 300.f)
     
@@ -97,7 +97,7 @@ let main argv =
         // Calculate elapsed time
         let elapsed = timer.Restart().AsSeconds()
         //ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0
-        ParticleSystem.emitFromPoint(position) count color 5.f 3.f 10 120.0
+        ParticleSystem.emitFromPoint(position) count color 1.f 3.33f 360 120.0
         // Update particles
         ParticleSystem.update(1.f /  60.0f)
 

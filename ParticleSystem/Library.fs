@@ -84,7 +84,7 @@ module ParticleSystem =
     //                                (-radius)) 
     //    // Assuming we use a simple circle as a particle representation
     //    //let color = System.Drawing.Color.FromArgb(int particle.Color.A, int particle.Color.R, int particle.Color.G, int particle.Color.B)
-    //    //window.DrawImage xform radius |> ignore
+    //    //window.DrawImage xform .img |> ignore
         
 
     //let draw2 (window: TDE3ManagerInterfaces.GraphicsManagerInterface.Window) = 
