@@ -65,15 +65,19 @@ module ParticleSystem =
     // Draw all particles
     let draw (window: RenderWindow) = 
         particles |> Seq.iter (fun p ->
+            
             if p.StartDelay <= 0.0f then
-                let radius = p.Size / 2.0f // Assuming Size is diameter, SFML expects radius
-                let shape = new CircleShape(radius) // SFML expects a float value for the radius
-                shape.Position <- p.Position
-                shape.FillColor <- p.Color
-                // Cast window to RenderWindow if needed, or directly use drawing capabilities if supported
-                //for i = particles.Count - 1 downto 0 do
-                //window.DrawImage transform particles.[i]
-                window.Draw(shape :> Drawable))
+                match p.Sprite with
+                | Some sprite -> window.Draw(sprite)
+                | None ->
+                    let radius = p.Size / 2.0f // Assuming Size is diameter, SFML expects radius
+                    let shape = new CircleShape(radius) // SFML expects a float value for the radius
+                    shape.Position <- p.Position
+                    shape.FillColor <- p.Color
+                    // Cast window to RenderWindow if needed, or directly use drawing capabilities if supported
+                    //for i = particles.Count - 1 downto 0 do
+                    //window.DrawImage transform particles.[i]
+                    window.Draw(shape :> Drawable))
 
     let loadSprite (filePath : string) =
         let texture = new Texture(filePath)
