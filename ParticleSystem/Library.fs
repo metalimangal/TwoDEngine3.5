@@ -18,7 +18,10 @@ type Particle = {
     Lifespan: float32
     StartDelay: float32  // Delay before the particle starts "living"
     InitialLifespan: float32  // To manage effects over time
+    Sprite: Option<Sprite>
 }
+
+
 
 module ParticleSystem = 
     let mutable particles : List<Particle> = List<Particle>()
@@ -72,6 +75,11 @@ module ParticleSystem =
                 //window.DrawImage transform particles.[i]
                 window.Draw(shape :> Drawable))
 
+    let loadSprite (filePath : string) =
+        let texture = new Texture(filePath)
+        let sprite = new Sprite(texture)
+        sprite
+
 
     //let drawParticle (window: TDE3ManagerInterfaces.GraphicsManagerInterface.Window) (particle: Particle) =
     //    let radius = particle.Size / 2.0f  // Assuming Size is diameter
@@ -96,8 +104,14 @@ module ParticleSystem =
 
 
     // Emits particles from a specified point with varying directions
-    let emitFromPoint (origin: Vector2f) count color size lifespan spreadAngle (velocityMagnitude: float) =
+    let emitFromPoint (origin: Vector2f) count color size lifespan spreadAngle (velocityMagnitude: float) (spriteFilePath : string option) =
         let random = System.Random()
+
+        let spriteOption =
+            match spriteFilePath with 
+            | Some path -> Some (loadSprite path)
+            | None -> None
+
         for i = 1 to count do
             let angle = (random.NextDouble() * float spreadAngle - (spreadAngle / 2.0)) * Math.PI / 180.0
             let velocity = Vector2f(float32(velocityMagnitude * Math.Cos(angle)), float32(velocityMagnitude * Math.Sin(angle)))
@@ -109,11 +123,12 @@ module ParticleSystem =
                 Lifespan = lifespan
                 StartDelay = 0.0f
                 InitialLifespan = lifespan
+                Sprite = spriteOption
             }
             addParticle particle
 
     // Emits particles along a line with a specified direction and spread
-    let emitFromLine (startPoint: Vector2f) (endPoint: Vector2f) count color size lifespan spreadAngle (velocityMagnitude: float) =
+    let emitFromLine (startPoint: Vector2f) (endPoint: Vector2f) count color size lifespan spreadAngle (velocityMagnitude: float) (spriteFilePath : string option) =
         let random = System.Random()
         let lineVec = Vector2f(endPoint.X - startPoint.X, endPoint.Y - startPoint.Y)
         let lineLength = Math.Sqrt(float (lineVec.X * lineVec.X + lineVec.Y * lineVec.Y))
@@ -121,4 +136,4 @@ module ParticleSystem =
             let positionAlongLine = random.NextDouble() * lineLength
             let position = Vector2f(startPoint.X + lineVec.X * float32 positionAlongLine / float32 lineLength,
                                     startPoint.Y + lineVec.Y * float32 positionAlongLine / float32 lineLength)
-            emitFromPoint position 1 color size lifespan spreadAngle velocityMagnitude
+            emitFromPoint position 1 color size lifespan spreadAngle velocityMagnitude spriteFilePath
