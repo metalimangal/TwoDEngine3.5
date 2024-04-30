@@ -63,21 +63,26 @@ module ParticleSystem =
                     particles.RemoveAt(i)
 
     // Draw all particles
-    let draw (window: RenderWindow) = 
+    let draw (window: RenderWindow) =
         particles |> Seq.iter (fun p ->
-            
             if p.StartDelay <= 0.0f then
                 match p.Sprite with
-                | Some sprite -> window.Draw(sprite)
+                | Some sprite ->
+                    // Define your desired scale factors here
+                    let desiredScaleX = p.Size*0.01f  // Example: Scale down to 50% of the original width
+                    let desiredScaleY = p.Size*0.01f  // Example: Scale down to 50% of the original height
+                    sprite.Scale <- Vector2f(desiredScaleX, desiredScaleY)
+                    sprite.Position <- p.Position
+                    sprite.Color <- p.Color
+                    window.Draw(sprite :> Drawable)  // Draw the scaled sprite
                 | None ->
-                    let radius = p.Size / 2.0f // Assuming Size is diameter, SFML expects radius
-                    let shape = new CircleShape(radius) // SFML expects a float value for the radius
+                    // Assuming Size is diameter and SFML expects radius
+                    let radius = p.Size / 2.0f
+                    let shape = new CircleShape(radius)
                     shape.Position <- p.Position
                     shape.FillColor <- p.Color
-                    // Cast window to RenderWindow if needed, or directly use drawing capabilities if supported
-                    //for i = particles.Count - 1 downto 0 do
-                    //window.DrawImage transform particles.[i]
-                    window.Draw(shape :> Drawable))
+                    window.Draw(shape :> Drawable))  // Draw the shape if there is no sprite
+
 
     let loadSprite (filePath : string) =
         let texture = new Texture(filePath)
