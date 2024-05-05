@@ -95,17 +95,21 @@ let main argv =
         
         let color = Color(byte (random.Next(256)), byte (random.Next(256)), byte (random.Next(256)), 255uy)
         // Calculate elapsed time
-        let elapsed = timer.Restart().AsSeconds()
+        let elapsed = timer.ElapsedTime.AsSeconds()
         let str = "E:/github/TwoDEngine3.5/TwoDEngine3/Assets/football_small.png"
         //let str = "C:/Users/Asus/Downloads/logo.png"
-        ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0 None
-        //ParticleSystem.emitFromPoint(position) count color 1.f 3.33f 360 120.0 (Some str)
-        // Update particles
+        //ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0 None
+        if elapsed>=1.0f then
+            //ParticleSystem.emitFromPoint(position) count color 1.f 3.33f 360 120.0 (Some str)
+            ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0 None
+            // Update particles
+
+            timer.Restart().AsSeconds() |> ignore
+            
         ParticleSystem.update(1.f /  60.0f)
 
-        // Draw particles
+            // Draw particles
         ParticleSystem.draw(window)
-
         // Display what has been drawn
         window.Display()
 

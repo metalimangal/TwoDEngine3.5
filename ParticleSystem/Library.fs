@@ -95,110 +95,117 @@ module ParticleSystem =
 
 
     let update (dt: float32) =
-        // Prepare data
-        let positions = particles |> Seq.map (fun p -> p.Position) |> Array.ofSeq
-        let velocities = particles |> Seq.map (fun p -> p.Velocity) |> Array.ofSeq
-        let lifespans = particles |> Seq.map (fun p -> p.Lifespan) |> Array.ofSeq
-        let getQueue () = 
-            let errorCode = ref ErrorCode.Success
-            let queue = Cl.CreateCommandQueue(context, deviceId, CommandQueueProperties.None, errorCode)
-            if errorCode.Value <> ErrorCode.Success then
-                failwithf "Failed to get OpenCL queue. ErrorCode: %A" errorCode.Value
-            queue
-        let queue = getQueue()
-        // Create buffers
-        let getPosBuffer () = 
-            let errorCode = ref ErrorCode.Success
-            let posBuffer = Cl.CreateBuffer(context, MemFlags.CopyHostPtr, positions, errorCode)
-            if errorCode.Value <> ErrorCode.Success then
-                failwithf "Failed to get OpenCL posBuffer. ErrorCode: %A" errorCode.Value
-            posBuffer
-        let posBuffer = getPosBuffer()
-        let getVelBuffer () = 
-            let errorCode = ref ErrorCode.Success
-            let velBuffer = Cl.CreateBuffer(context, MemFlags.CopyHostPtr, velocities, errorCode)
-            if errorCode.Value <> ErrorCode.Success then
-                failwithf "Failed to get OpenCL velBuffer. ErrorCode: %A" errorCode.Value
-            velBuffer
-        let velBuffer = getVelBuffer()
-        let getLifeBuffer () = 
-            let errorCode = ref ErrorCode.Success
-            let lifeBuffer = Cl.CreateBuffer(context, MemFlags.CopyHostPtr, lifespans, errorCode)
-            if errorCode.Value <> ErrorCode.Success then
-                failwithf "Failed to get OpenCL Life Buffer. ErrorCode: %A" errorCode.Value
-            lifeBuffer
-        let lifeBuffer = getLifeBuffer()
+        if particles.Count>0 then
+            // Prepare data
+            let positions = particles |> Seq.map (fun p -> p.Position) |> Array.ofSeq
+            let velocities = particles |> Seq.map (fun p -> p.Velocity) |> Array.ofSeq
+            let lifespans = particles |> Seq.map (fun p -> p.Lifespan) |> Array.ofSeq
+            let getQueue () = 
+                let errorCode = ref ErrorCode.Success
+                let queue = Cl.CreateCommandQueue(context, deviceId, CommandQueueProperties.None, errorCode)
+                if errorCode.Value <> ErrorCode.Success then
+                    failwithf "Failed to get OpenCL queue. ErrorCode: %A" errorCode.Value
+                queue
+            let queue = getQueue()
+            // Create buffers
+            let getPosBuffer () = 
+                let errorCode = ref ErrorCode.Success
+                let posBuffer = Cl.CreateBuffer(context, MemFlags.CopyHostPtr, positions, errorCode)
+                if errorCode.Value <> ErrorCode.Success then
+                    failwithf "Failed to get OpenCL posBuffer. ErrorCode: %A" errorCode.Value
+                posBuffer
+            let posBuffer = getPosBuffer()
+            let getVelBuffer () = 
+                let errorCode = ref ErrorCode.Success
+                let velBuffer = Cl.CreateBuffer(context, MemFlags.CopyHostPtr, velocities, errorCode)
+                if errorCode.Value <> ErrorCode.Success then
+                    failwithf "Failed to get OpenCL velBuffer. ErrorCode: %A" errorCode.Value
+                velBuffer
+            let velBuffer = getVelBuffer()
+            let getLifeBuffer () = 
+                let errorCode = ref ErrorCode.Success
+                let lifeBuffer = Cl.CreateBuffer(context, MemFlags.CopyHostPtr, lifespans, errorCode)
+                if errorCode.Value <> ErrorCode.Success then
+                    failwithf "Failed to get OpenCL Life Buffer. ErrorCode: %A" errorCode.Value
+                lifeBuffer
+            let lifeBuffer = getLifeBuffer()
 
-        // Set kernel arguments
-        Cl.SetKernelArg(kernel, uint32(0), posBuffer) |> ignore
-        Cl.SetKernelArg(kernel, uint32(1), velBuffer) |> ignore
-        Cl.SetKernelArg(kernel, uint32(2), lifeBuffer) |> ignore
-        Cl.SetKernelArg(kernel, uint32(3), dt) |> ignore
+            // Set kernel arguments
+            Cl.SetKernelArg(kernel, uint32(0), posBuffer) |> ignore
+            Cl.SetKernelArg(kernel, uint32(1), velBuffer) |> ignore
+            Cl.SetKernelArg(kernel, uint32(2), lifeBuffer) |> ignore
+            Cl.SetKernelArg(kernel, uint32(3), dt) |> ignore
 
-        // Execute the kernel
-        let globalWorkSize = [| nativeint particles.Count |]
-        Cl.EnqueueNDRangeKernel(queue, kernel, 1u, null, globalWorkSize, null, 0u, null) |> ignore
-        let readVal: Bool = Bool.True
+            // Execute the kernel
+            let globalWorkSize = [| nativeint particles.Count |]
+            Cl.EnqueueNDRangeKernel(queue, kernel, 1u, null, globalWorkSize, null, 0u, null) |> ignore
+            let readVal: Bool = Bool.True
 
-        // Buffer sizes
-        let posBufferSize = nativeint (positions.Length * sizeof<float32> * 2)
-        let lifeBufferSize = nativeint (lifespans.Length * sizeof<float32>)
+            // Buffer sizes
+            let posBufferSize = nativeint (positions.Length * sizeof<float32> * 2)
+            let lifeBufferSize = nativeint (lifespans.Length * sizeof<float32>)
         
 
-        // Reading position buffer
-        let posReadStatus = Cl.EnqueueReadBuffer(
-            queue,
-            posBuffer,
-            readVal,
-            0,  // Offset as nativeint
-            posBufferSize,  // Buffer size as nativeint
-            positions,  // Data array
-            0u,  // numEventsInWaitList
-            null  // eventWaitList
-        )
+            // Reading position buffer
+            let posReadStatus = Cl.EnqueueReadBuffer(
+                queue,
+                posBuffer,
+                readVal,
+                0,  // Offset as nativeint
+                posBufferSize,  // Buffer size as nativeint
+                positions,  // Data array
+                0u,  // numEventsInWaitList
+                null  // eventWaitList
+            )
 
-        // Reading lifespan buffer
-        let lifeReadStatus = Cl.EnqueueReadBuffer(
-            queue,
-            lifeBuffer,
-            readVal,
-            nativeint 0,  // Offset
-            lifeBufferSize,
-            lifespans,
-            0u,  // numEventsInWaitList
-            null // eventWaitList
-        )
+            // Reading lifespan buffer
+            let lifeReadStatus = Cl.EnqueueReadBuffer(
+                queue,
+                lifeBuffer,
+                readVal,
+                nativeint 0,  // Offset
+                lifeBufferSize,
+                lifespans,
+                0u,  // numEventsInWaitList
+                null // eventWaitList
+            )
 
-        // Update local particle list with new data
-        for i in 0 .. particles.Count - 1 do
-            particles.[i] <- { particles.[i] with Position = positions.[i]; Lifespan = lifespans.[i] }
+            
 
-        // Release resources
-        Cl.ReleaseMemObject(posBuffer) |> ignore
-        Cl.ReleaseMemObject(velBuffer) |> ignore
-        Cl.ReleaseMemObject(lifeBuffer) |> ignore
+            // Update local particle list with new data
+            for i in 0 .. particles.Count - 1 do
+                particles.[i] <- { particles.[i] with Position = positions.[i]; Lifespan = lifespans.[i] }
+
+            particles <- List<Particle>((particles |>   Seq.filter (fun p -> p.Lifespan > 0.0f)))
+
+
+            // Release resources
+            Cl.ReleaseMemObject(posBuffer) |> ignore
+            Cl.ReleaseMemObject(velBuffer) |> ignore
+            Cl.ReleaseMemObject(lifeBuffer) |> ignore
 
 
     // Draw all particles
     let draw (window: RenderWindow) =
-        particles |> Seq.iter (fun p ->
-            if p.StartDelay <= 0.0f then
-                match p.Sprite with
-                | Some sprite ->
-                    // Define your desired scale factors here
-                    let desiredScaleX = p.Size*0.01f  // Example: Scale down to 50% of the original width
-                    let desiredScaleY = p.Size*0.01f  // Example: Scale down to 50% of the original height
-                    sprite.Scale <- Vector2f(desiredScaleX, desiredScaleY)
-                    sprite.Position <- p.Position
-                    sprite.Color <- p.Color
-                    window.Draw(sprite :> Drawable)  // Draw the scaled sprite
-                | None ->
-                    // Assuming Size is diameter and SFML expects radius
-                    let radius = p.Size / 2.0f
-                    let shape = new CircleShape(radius)
-                    shape.Position <- p.Position
-                    shape.FillColor <- p.Color
-                    window.Draw(shape :> Drawable))  // Draw the shape if there is no sprite
+        if particles.Count > 0 then
+            particles |> Seq.iter (fun p ->
+                if p.StartDelay <= 0.0f then
+                    match p.Sprite with
+                    | Some sprite ->
+                        // Define your desired scale factors here
+                        let desiredScaleX = p.Size*0.01f  // Example: Scale down to 50% of the original width
+                        let desiredScaleY = p.Size*0.01f  // Example: Scale down to 50% of the original height
+                        sprite.Scale <- Vector2f(desiredScaleX, desiredScaleY)
+                        sprite.Position <- p.Position
+                        sprite.Color <- p.Color
+                        window.Draw(sprite :> Drawable)  // Draw the scaled sprite
+                    | None ->
+                        // Assuming Size is diameter and SFML expects radius
+                        let radius = p.Size / 2.0f
+                        let shape = new CircleShape(radius)
+                        shape.Position <- p.Position
+                        shape.FillColor <- p.Color
+                        window.Draw(shape :> Drawable))  // Draw the shape if there is no sprite
 
 
     let loadSprite (filePath : string) =
