@@ -14,6 +14,9 @@ open TDE3ManagerInterfaces.TextRendererInterfaces
 open System.Drawing
 open NewtonianObject
 open Player
+open SFML.System
+open ParticleSystemLib
+open SFML.Graphics
 
 type SysColor = System.Drawing.Color
 
@@ -130,9 +133,27 @@ let Start() =
                                                 (-asteroid.img.Size.Y /2f) )
                     window.DrawImage xform asteroid.img )
                 
+                let calculateEmitterPosition (ship: NewtonianObject) =
+                // Assuming ship's orientation (r) is in degrees and positive rotation is clockwise.
+                // Calculate the offset for the emitter position below the ship.
+                    let orientationRad = DegToRad ship.r
+                    let emitterOffsetDistance = 0.0f // Distance below the ship center to place the emitter
+                    let emitterX = ship.x + emitterOffsetDistance * sin(orientationRad)
+                    let emitterY = ship.y - emitterOffsetDistance * cos(orientationRad)
+                    Vector2f(emitterX, emitterY)
+
+
                 match PlayerObj with
                 | Ship ship ->
                     //printfn $"{ship.shipObject.x} {ship.shipObject.y} {ship.shipObject.r}"
+                    let shipObject = ship.shipObject
+                    let emitterPos = calculateEmitterPosition shipObject  // Calculate the emitter position
+                    let color = Color.Red
+                    ParticleSystem.emitFromPoint emitterPos 5 (color) 5.f 3.f 10 120.0  // Random color and moderate emission rate
+                    ParticleSystem.update(1.f /  90.0f)
+
+        // Draw particles
+                    //ParticleSystem.draw2 window
                     let xform =
                         window.TranslationTransform ship.shipObject.x ship.shipObject.y 
                         |> fun x -> x.Multiply (window.RotationTransform ship.shipObject.r)

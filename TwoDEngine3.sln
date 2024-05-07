@@ -21,7 +21,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "InputManagerSilk", "InputMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RawInputLight", "..\RawInputLight\RawInputLight\RawInputLight.csproj", "{93471AE2-D740-4785-A8E6-D9FFF2674C2A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ParticleSystem", "ParticleSystem\ParticleSystem.fsproj", "{B2B10FFD-6E74-4AE4-9E74-6B3E65E91D79}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ParticleSystem", "ParticleSystem\ParticleSystem.fsproj", "{B2B10FFD-6E74-4AE4-9E74-6B3E65E91D79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
