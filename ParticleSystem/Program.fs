@@ -78,13 +78,20 @@ let main argv =
     let window = new RenderWindow(mode, "Particle System with SFML")
     window.SetFramerateLimit(60u)
 
-    // Create a clock to manage time
+
     let timer = new Clock()
+    let fpsClock = new Clock()
+    let mutable frameCount = 0.0f
+    let mutable timeElapsed = 0.0f
+    let font = new Font("E:/github/TwoDEngine3.5/ParticleSystem/data-control/data-latin.ttf")
+    let fpsText = new Text("", font, uint32(24))
+    fpsText.Position <- Vector2f(10.f, 10.f)
+    fpsText.FillColor <- Color.White
 
     // Emit particles once, if you only want a single burst
     let count = 1000
     let position = Vector2f(400.0f, 300.f)
-    let emissionRate = 10.0f  // particles per second
+    let emissionRate = 10000.0f  // particles per second
     let mutable emissionAccumulator = 0.0f
     
 
@@ -100,6 +107,16 @@ let main argv =
         //let str = "C:/Users/Asus/Downloads/logo.png"
         //ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0 None
         let frameTime = timer.Restart().AsSeconds()
+
+
+        frameCount <- frameCount + 1.0f
+        timeElapsed <- timeElapsed + frameTime
+        if timeElapsed >= 1.0f then
+            let fps = frameCount / timeElapsed
+            fpsText.DisplayedString <- sprintf "FPS: %.2f" fps
+            frameCount <- 0.0f
+            timeElapsed <- timeElapsed - 1.0f
+
 
         // Calculate the number of particles to emit this frame
         emissionAccumulator <- emissionAccumulator + (emissionRate * frameTime)
@@ -120,6 +137,7 @@ let main argv =
             // Draw particles
         ParticleSystem.draw(window)
         // Display what has been drawn
+        window.Draw(fpsText)
         window.Display()
 
         // Handle keyboard events for closing the window
