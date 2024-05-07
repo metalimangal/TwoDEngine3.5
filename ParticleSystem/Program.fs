@@ -82,9 +82,9 @@ let main argv =
     let timer = new Clock()
 
     // Emit particles once, if you only want a single burst
-    let count = 1
+    let count = 1000
     let position = Vector2f(400.0f, 300.f)
-    let emissionRate = 1.0f  // particles per second
+    let emissionRate = 10.0f  // particles per second
     let mutable emissionAccumulator = 0.0f
     
 
@@ -108,7 +108,8 @@ let main argv =
 
         // Emit particles based on the calculated amount
         if particlesToEmit > 0 then
-            ParticleSystem.emitFromPoint(position) particlesToEmit color 1.f 3.33f 360 120.0 (Some str)
+            ParticleSystem.emitFromPoint(position) particlesToEmit color 1.f 3.33f 360 120.0 None
+            //ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) particlesToEmit color 5.f 3.f 100 20.0 (Some str)
             emissionAccumulator <- emissionAccumulator - float32 particlesToEmit
             //ParticleSystem.emitFromLine(position-(Vector2f(200.0f, 200.0f))) (position+(Vector2f(200.0f, 200.0f))) count color 5.f 3.f 100 20.0 None
             // Update particles
