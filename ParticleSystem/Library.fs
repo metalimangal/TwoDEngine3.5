@@ -53,7 +53,7 @@ module ParticleSystem =
         context
     let context = getContext()
     let queue = Cl.CreateCommandQueue(context, deviceId, CommandQueueProperties.None)
-    let programSource = System.IO.File.ReadAllText("E:/github/TwoDEngine3.5/ParticleSystem/particle_update.cl")
+    let programSource = System.IO.File.ReadAllText("../../../particle_update.cl")
     let getProgram () = 
         let errorCode = ref ErrorCode.Success
         let program = Cl.CreateProgramWithSource(context, 1u, [|programSource|], [|programSource.Length|], errorCode)
